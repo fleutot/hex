@@ -16,7 +16,7 @@ void test_graph_constructor(void);
 
 int main(void)
 {
-    srand(time(0)); // Done only once.
+    srand(time(0)); // Seed only once.
 
     test_graph_constructor();
     return 0;
@@ -24,7 +24,6 @@ int main(void)
 
 void test_graph_constructor(void)
 {
-    #warning Test with density one.
     Graph graph(5, 0.5, 10);
     graph.print();
 }
