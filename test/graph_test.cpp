@@ -8,39 +8,61 @@ Copyright (c) 2013 Gauthier Östervall
 #include <cassert>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
+using namespace std;
 
 //******************************************************************************
 // Function prototypes
 //******************************************************************************
-void test_graph_constructor(void);
+void test_graph_constructor_1(void);
+void test_graph_constructor_2(void);
+void test_graph_edge_add(void);
 
 int main(void)
 {
     srand(time(0)); // Seed only once.
 
-    test_graph_constructor();
+    test_graph_constructor_1();
+    test_graph_constructor_2();
+    test_graph_edge_add();
     return 0;
 }
 
-void test_graph_constructor(void)
+void test_graph_constructor_1(void)
 {
-    const int nb_vertices = 5;
-    const double edge_density = 0.5;
+    Graph graph(10);
+    assert(graph.nb_vertices_get() == 10);
+}
 
-    Graph graph(nb_vertices, edge_density, 10);
-    graph.print();
+void test_graph_constructor_2(void)
+{
 
-    int nb_edges_calculated = 0;
-    for (int start = 0; start < nb_vertices; ++start) {
-        for (int end = 0; end < nb_vertices; ++end) {
-            if (graph.edge_cost_get(start, end) != 0) {
-                ++nb_edges_calculated;
-            }
-        }
-    }
+    vector<Edge> edges;
 
-    assert(nb_edges_calculated ==
-           static_cast<int> (nb_vertices * nb_vertices * edge_density)
-        );
+    Edge e1(1, 2, 2.0);
+    edges.push_back(e1);
+    Edge e2(1, 2, 2.0);
+    edges.push_back(e2);
+    Edge e3(1, 2, 2.0);
+    edges.push_back(e3);
+
+    Graph graph(5, edges);
+    assert(graph.nb_vertices_get() == 5);
+    assert(graph.nb_edges_get() == 3);
+}
+
+void test_graph_edge_add(void)
+{
+    Graph graph(5);
+
+    Edge e1(1, 2, 2.0);
+    Edge e2(1, 2, 2.0);
+    Edge e3(1, 2, 2.0);
+
+    graph.edge_add(e1);
+    graph.edge_add(e2);
+    graph.edge_add(e3);
+
+    assert(graph.nb_edges_get() == 3);
 }

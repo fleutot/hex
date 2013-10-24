@@ -32,6 +32,60 @@ vector<T> random_pick(vector<T> input, const int nb_out)
     return out;
 }
 
+// ----------------------------------------------------------------------------
+/// \brief Swap the values of the parameter if the first one is not less than
+/// the second one.
+//----------------------------------------------------------------------------
+template <class T>
+void reorder_values(T& a, T& b)
+{
+    if (b < a) {
+        T temp = b;
+        b = a;
+        a = temp;
+    }
+}
+
+
+
+Edge::Edge(int start, int end, cost_t cost)
+{
+    if (start == end) {
+        cout << "Created an edge with same start and end! (" << start
+             << ")" << endl;
+    } else if (start > end) {
+        // Edges are undirected, have always start < end as a convention.
+        // This may speed up searches.
+        this->start = end;
+        this->end = start;
+    } else {
+        this->start = start;
+        this->end = end;
+    }
+    this->cost = cost;
+}
+
+Edge::~Edge()
+{
+    // Nothing to do
+}
+
+int Edge::start_get(void)
+{
+    return start;
+}
+
+int Edge::end_get(void)
+{
+    return end;
+}
+
+cost_t Edge::cost_get(void)
+{
+    return cost;
+}
+
+
 //  ----------------------------------------------------------------------------
 /// \brief  Graph constructor
 /// \param  nb_vertices Number of vertices (nodes) to create.
@@ -39,88 +93,54 @@ vector<T> random_pick(vector<T> input, const int nb_out)
 /// which must be an actual edge.
 /// \param  max_cost    Maximal cost for any of the edges created.
 //  ----------------------------------------------------------------------------
-Graph::Graph(const int nb_vertices = 50,
-             const double edge_density = 0.1,
-             const cost_t max_cost = 10)
+Graph::Graph(const int nb_vertices = 50)
 {
     this->nb_vertices = nb_vertices;
-
-    // nb_possible_edges includes edges from a vertix to itself.
-    const int nb_possible_edges = nb_vertices * nb_vertices;
-
-    // edge_matrix: cost at slot (i, j) means there is an edge of that cost
-    // between vertix i and j.  All other 0 means no edge there (e.g. on the
-    // diagonal of the matrix).  Instead of a 2D array, the matrix is internally
-    // represented by a 1D array.  Index [i][j] is instead index [i *
-    // nb_vertices + j].  This was done because of the difficulty of dynamically
-    // allocating a 2D array.
-    edge_matrix = new int[nb_possible_edges]();   // zero-initialized.
-
-    int nb_edges = static_cast<int> (edge_density * nb_possible_edges);
-    cout << "nb_edges: " << nb_edges << endl;
-
-    // Create a list of 1D indeces in edge_matrix, which are possible as edges.
-    // In a 2D array, these would be any slot that is not on the diagonal.
-    // In a 1D array the principle remains: the indeces that may be picked are
-    // all (i * width + j) such that i != j.
-    vector<int> possible_edges;
-    // Excludes edges from a vertix to itself ( - 1).
-    possible_edges.reserve(nb_vertices * (nb_vertices - 1));
-    for (int i = 0; i < nb_vertices; ++i) {
-        for (int j = 0; j < nb_vertices; ++j) {
-            if (i != j) {
-                possible_edges.push_back(i * nb_vertices + j);
-            }
-        }
-    }
-
-    // Pick a number of random edges amongst the possible ones.
-    vector<int> edge_indeces = random_pick(possible_edges, nb_edges);
-
-    // Set a cost to these randombly picked edges.
-    for (unsigned int i = 0; i < edge_indeces.size(); ++i) {
-        // The "-1" and "+1" to avoid giving cost 0, which means no edge.
-        edge_matrix[edge_indeces[i]] = rand() % (max_cost - 1) + 1;
-    }
 }
 
+Graph::Graph(const int nb_vertices, vector<Edge> edge_list)
+{
+    this->nb_vertices = nb_vertices;
+    this->edge_list = edge_list;
+}
 
 //  ----------------------------------------------------------------------------
 /// \brief  Destructor
 //  ----------------------------------------------------------------------------
 Graph::~Graph(void)
 {
-    delete(edge_matrix);
+    // Nothing to deallocate.
 }
 
-
-//  ----------------------------------------------------------------------------
-cost_t Graph::edge_cost_get(const int start, const int end)
+int Graph::nb_vertices_get(void)
 {
-    return edge_matrix[start * nb_vertices + end];
+    return nb_vertices;
 }
 
-//  ----------------------------------------------------------------------------
-void Graph::edge_cost_set(const int start, const int end, const cost_t cost)
+int Graph::nb_edges_get(void)
 {
-    edge_matrix[start * nb_vertices + end] = cost;
+    return edge_list.size();
 }
 
-//  ----------------------------------------------------------------------------
-void Graph::print(void)
+void Graph::edge_add(const Edge new_edge)
 {
-    cout << "    ";
-    for (int i = 0; i < nb_vertices; ++i) {
-        cout << setw(4) << i;
-    }
-    cout << endl;
+    edge_list.push_back(new_edge);
+}
 
-    for (int i = 0; i < nb_vertices; ++i) {
-        cout << setw(4) << i;
-        for (int j = 0; j < nb_vertices; ++j) {
-            cout << setw(4) << edge_cost_get(i, j);
+bool Graph::adjacent_check(int node_a, int node_b)
+{
+    // Make sure node_a has the lower value of the two, as it is the standard
+    // for Edge to have start less than end.
+    reorder_values(node_a, node_b);
+    for (unsigned int i = 0; i < edge_list.size(); ++i) {
+        if ((edge_list[i].start_get() == node_a)
+             && (edge_list[i].end_get() == node_b)
+            ){
+            return true;
         }
-        cout << endl;
     }
+    return false;
 }
+
+
 
