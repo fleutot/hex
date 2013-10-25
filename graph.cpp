@@ -144,7 +144,12 @@ void Graph::edge_add(const Edge new_edge)
 {
     // Check first that the edge does not exist already, even if it has a
     // different cost.
-
+    int edge_found_index = ~0;
+    if (edge_exists(new_edge, edge_found_index)) {
+        cout << __func__ << ": attempting to create an edge that already "
+             << "exists." << endl;
+        return;
+    }
 
     edge_list.push_back(new_edge);
 }

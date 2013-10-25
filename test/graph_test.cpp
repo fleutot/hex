@@ -66,10 +66,12 @@ void test_graph_edge_add(void)
     Edge e1(1, 2, 2.0);
     Edge e2(1, 3, 2.0);
     Edge e3(2, 3, 2.0);
+    Edge e4(1, 3, 3.0);
 
     graph.edge_add(e1);
     graph.edge_add(e2);
     graph.edge_add(e3);
+    graph.edge_add(e4); // Edge exists already, not added.
 
     assert(graph.nb_edges_get() == 3);
 }
