@@ -20,12 +20,13 @@ using namespace std;
 template <class T>
 vector<T> random_pick(vector<T> input, const int nb_out)
 {
-    vector<T> out(nb_out);
+    vector<T> out;
+    out.reserve(nb_out);
 
     for (int i = 0; i < nb_out; ++i) {
         int index = rand() % input.size();
         // Put the newly picked element in the output vector.
-        out[i] = input[index];
+        out.push_back(input[index]);
         // Remove the newly picked element to avoid picking it twice.
         input.erase(input.begin() + index);
     }
@@ -46,8 +47,6 @@ void reorder_values(T& a, T& b)
     }
 }
 
-
-
 Edge::Edge(int start, int end, cost_t cost)
 {
     if (start == end) {
@@ -63,6 +62,28 @@ Edge::Edge(int start, int end, cost_t cost)
         this->end = end;
     }
     this->cost = cost;
+}
+
+//  ----------------------------------------------------------------------------
+/// \brief  Create an edge with no cost, use to create temp edges, for example
+/// as input parameter to edge_exists.
+/// \param  start, end: vertices indexes.
+//  ----------------------------------------------------------------------------
+Edge::Edge(int start, int end)
+{
+    if (start == end) {
+        cout << "Created an edge with same start and end! (" << start
+             << ")" << endl;
+        exit(1);
+    } else if (start > end) {
+        // Edges are undirected, have always start < end as a convention.
+        // This may speed up searches.
+        this->start = end;
+        this->end = start;
+    } else {
+        this->start = start;
+        this->end = end;
+    }
 }
 
 Edge::~Edge()
@@ -85,6 +106,10 @@ cost_t Edge::cost_get(void) const
     return cost;
 }
 
+void Edge::cost_set(const cost_t cost)
+{
+    this->cost = cost;
+}
 
 //  ----------------------------------------------------------------------------
 /// \brief  Graph constructor
@@ -104,6 +129,21 @@ Graph::Graph(const int nb_vertices, vector<Edge> edge_list)
     this->edge_list = edge_list;
 }
 
+// Constructor for a random graph.
+Graph::Graph(const int nb_vertices,
+             const double edge_density,
+             const cost_t max_cost)
+{
+    this->nb_vertices = nb_vertices;
+
+    // -1 because there are no edges from a vertex to itself.
+    int nb_edges = static_cast<int> (nb_vertices * (nb_vertices - 1)
+                                     * edge_density);
+
+    vector<Edge> possible_edges = all_possible_edges_generate();
+    edge_list = random_pick(possible_edges, nb_edges);
+}
+
 //  ----------------------------------------------------------------------------
 /// \brief  Destructor
 //  ----------------------------------------------------------------------------
@@ -111,6 +151,51 @@ Graph::~Graph(void)
 {
     // Nothing to deallocate.
 }
+
+
+//  ----------------------------------------------------------------------------
+/// \brief  Display function for graphes
+//  ----------------------------------------------------------------------------
+ostream& operator<<(ostream& os, Graph graph)
+{
+    const int slot_width = 5;
+
+    os << setw(slot_width) << " ";
+    // Labels
+    for (int i = 0; i < graph.nb_vertices_get(); ++i) {
+        os << setw(slot_width) << i;
+    }
+    os << endl;
+
+    // A line
+    for (int i = 0; i <= graph.nb_vertices_get(); ++i) {
+        os << "-----";
+    }
+    os << endl;
+
+    // The half matrix with costs.
+    for (int i = 0; i < graph.nb_vertices_get(); ++i) {
+        os << setw(slot_width - 1) << i << "|";
+        for (int j = 0; j < graph.nb_vertices_get(); ++j) {
+            //cout << "here " << i << ", " << j << endl;
+            if (j <= i) {
+                os << setw(slot_width) << " ";
+            } else {
+                Edge edge(i, j);
+                graph.edge_cost_update(edge);
+                cost_t cost = edge.cost_get();
+                if (cost > 0) {
+                    os << setw(slot_width) << edge.cost_get();
+                } else {
+                    os << setw(slot_width) << " ";
+                }
+            }
+        }
+        cout << endl;
+    }
+    return os;
+}
+
 
 int Graph::nb_vertices_get(void)
 {
@@ -169,6 +254,23 @@ void Graph::edge_add(const Edge new_edge)
 
     edge_list.push_back(new_edge);
 }
+
+//  ----------------------------------------------------------------------------
+/// \brief  Update the cost of the edge passed as parameter, to the cost of the
+/// corresponding edge in the graph if it exists, or to 0 otherwise.
+/// \param  edge to update.
+//  ----------------------------------------------------------------------------
+void Graph::edge_cost_update(Edge& edge)
+{
+    int found_index;
+    bool found = edge_exists(edge, found_index);
+    if (found) {
+        edge.cost_set(edge_list[found_index].cost_get());
+    } else {
+        edge.cost_set(0);
+    }
+}
+
 
 bool Graph::adjacent_check(int node_a, int node_b)
 {

@@ -18,6 +18,7 @@ using namespace std;
 //******************************************************************************
 void test_graph_constructor_1(void);
 void test_graph_constructor_2(void);
+void test_graph_constructor_3(void);
 void test_graph_edge_add(void);
 void test_graph_neighbors_get(void);
 void test_graph_edge_exists(void);
@@ -29,6 +30,7 @@ int main(void)
 
     test_graph_constructor_1();
     test_graph_constructor_2();
+    test_graph_constructor_3();
     test_graph_edge_add();
     test_graph_neighbors_get();
     test_graph_edge_exists();
@@ -58,6 +60,22 @@ void test_graph_constructor_2(void)
     Graph graph(5, edges);
     assert(graph.nb_vertices_get() == 5);
     assert(graph.nb_edges_get() == 3);
+}
+
+void test_graph_constructor_3(void)
+{
+    cout << __func__ << endl;
+
+    const int nb_vertices = 50;
+    const double edge_density = 0.5;
+
+    Graph graph(50, 0.5, 10);
+
+    assert(graph.nb_edges_get()
+           == static_cast<int> (nb_vertices
+                                * (nb_vertices - 1)
+                                * edge_density));
+    cout << graph;
 }
 
 void test_graph_edge_add(void)

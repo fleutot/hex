@@ -1,15 +1,15 @@
 * TODO Graph class
-** DONE Set of constructors
+** TODO Set of constructors
    Is there really a need for several? -> one with no edges, one with a list of
-   edges. 
-** TODO Add edges
+   edges, one for random generation.
+** DONE Add edges
    Positive cost, undirected (think of connectivity matrix, only a triangle
    matix).
 ** TODO Dijkstra's algorithm as a member function
 
 
 * TODO Random initialization of graphes
-** TODO As a procedure
+** TODO As a procedure or as a constructor
 ** TODO edge density and distance range as parameters
    Pick a number of edges randomly from all possible edges (not a probabililty
    of being an edge, for all edges).
@@ -26,3 +26,6 @@
 
 * TODO Running changes
 ** TODO edge_add() must check if the edge does not already exist
+** TODO reuse Edge::Edge(int, int) inside Edge::Edge(int, int, cost_t)?
+** TODO change operator<< of graph
+   To use a function of the type graph.edge_cost_get(edge) .
