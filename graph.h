@@ -16,9 +16,9 @@ class Edge {
 public:
     Edge(int start, int end, cost_t cost);
     ~Edge();
-    int start_get(void);
-    int end_get(void);
-    cost_t cost_get(void);
+    int start_get(void) const;
+    int end_get(void) const;
+    cost_t cost_get(void) const;
 private:
     int start;
     int end;
@@ -35,6 +35,7 @@ public:
     int nb_edges_get(void);
     void edge_add(Edge new_edge);
     bool adjacent_check(const int node_a, const int node_b);
+    std::vector<int> neighbors_get(const int node);
 private:
     std::vector<Edge> edge_list;
     int nb_vertices;

@@ -70,17 +70,17 @@ Edge::~Edge()
     // Nothing to do
 }
 
-int Edge::start_get(void)
+int Edge::start_get(void) const
 {
     return start;
 }
 
-int Edge::end_get(void)
+int Edge::end_get(void) const
 {
     return end;
 }
 
-cost_t Edge::cost_get(void)
+cost_t Edge::cost_get(void) const
 {
     return cost;
 }
@@ -124,6 +124,7 @@ int Graph::nb_edges_get(void)
 
 void Graph::edge_add(const Edge new_edge)
 {
+    // Check first that the edge does not exist already.
     edge_list.push_back(new_edge);
 }
 
@@ -142,5 +143,18 @@ bool Graph::adjacent_check(int node_a, int node_b)
     return false;
 }
 
-
-
+//  ----------------------------------------------------------------------------
+/// \brief  Lists all nodes y such that there is an edge from node to y.
+//  ----------------------------------------------------------------------------
+vector<int> Graph::neighbors_get(const int node)
+{
+    vector<int> neighbors;
+    for (unsigned int i = 0; i < edge_list.size(); ++i) {
+        if ((edge_list[i].start_get() == node)
+            || (edge_list[i].end_get() == node)
+            ){
+            neighbors.push_back(edge_list[i].end_get());
+        }
+    }
+    return neighbors;
+}

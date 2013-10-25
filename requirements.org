@@ -1,0 +1,28 @@
+* TODO Graph class
+** DONE Set of constructors
+   Is there really a need for several? -> one with no edges, one with a list of
+   edges. 
+** TODO Add edges
+   Positive cost, undirected (think of connectivity matrix, only a triangle
+   matix).
+** TODO Dijkstra's algorithm as a member function
+
+
+* TODO Random initialization of graphes
+** TODO As a procedure
+** TODO edge density and distance range as parameters
+   Pick a number of edges randomly from all possible edges (not a probabililty
+   of being an edge, for all edges).
+
+* TODO main program
+** TODO Compute a set of randomly generated graphs
+** TODO Compute an average shortest path
+
+* TODO Comments
+** TODO 200 words on what you learned
+** TODO Output showing the average path length calculation
+   Densities 20 %, 40 %, 50 nodes, distance within [1.0; 10.0]. Only average
+   from vertix 1 to all others (omit the value if no path is found).
+
+* TODO Running changes
+** TODO edge_add() must check if the edge does not already exist

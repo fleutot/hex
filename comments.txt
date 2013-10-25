@@ -1,0 +1,24 @@
+* Random selection of edges
+
+In the instruction:
+"The procedure should run through all possible undirected edges, say
+(i,j) and place the edge in the graph if a random probability
+calculation is less than the density." 
+contradicts:
+"So a graph whose density is 0.1 would have 10% of its edges picked at
+random and its edge distance would be selected at random from the
+distance range."
+The first alternative does not guarantee that the correct number of
+edges be created. I implemented the second alternative instead, where
+the correct number of edges are picked, only the ones being picked is
+random.
+
+* int Edge::start_get(void) const
+The "const" at the end of the function header applies to the "this"
+pointer. This allows to call edge.start_get() in another function, even
+if the edge is being declared const.
+Otherwise, trying to take away the const gives a compilation error.
+
+
+
+Variable name "new_edge": no pun intended :)
