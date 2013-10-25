@@ -34,8 +34,10 @@ public:
     int nb_vertices_get(void);
     int nb_edges_get(void);
     bool edge_exists(const Edge edge, int& index);
+    bool edge_exists(const Edge edge);
     void edge_add(Edge new_edge);
     bool adjacent_check(const int node_a, const int node_b);
+    std::vector<Edge> all_possible_edges_generate(void);
     std::vector<int> neighbors_get(const int node);
 private:
     std::vector<Edge> edge_list;

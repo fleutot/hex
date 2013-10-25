@@ -140,6 +140,22 @@ bool Graph::edge_exists(const Edge edge, int& index)
     return false;
 }
 
+//  ----------------------------------------------------------------------------
+/// \brief  Check if an edge exists, regardless of cost.
+/// \return True if the edge existed.
+//  ----------------------------------------------------------------------------
+bool Graph::edge_exists(const Edge edge)
+{
+    for (unsigned int i = 0; i < edge_list.size(); ++i) {
+        if ((edge.start_get() == edge_list[i].start_get())
+            && (edge.end_get() == edge_list[i].end_get())
+            ) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void Graph::edge_add(const Edge new_edge)
 {
     // Check first that the edge does not exist already, even if it has a
@@ -168,6 +184,23 @@ bool Graph::adjacent_check(int node_a, int node_b)
     }
     return false;
 }
+
+vector<Edge> Graph::all_possible_edges_generate(void)
+{
+    vector<Edge> all_edges;
+    // No edges for a vertex to itself, thus the -1.
+    // The edges are undirected, thus the /2.
+    all_edges.reserve(nb_vertices * (nb_vertices - 1) / 2);
+
+    for (int i = 0; i < nb_vertices; ++i) {
+        for (int j = i + 1; j < nb_vertices; ++j) {
+            Edge edge(i, j, 0);
+            all_edges.push_back(edge);
+        }
+    }
+    return all_edges;
+}
+
 
 //  ----------------------------------------------------------------------------
 /// \brief  Lists all nodes y such that there is an edge from node to y.

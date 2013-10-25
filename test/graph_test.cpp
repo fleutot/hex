@@ -21,6 +21,7 @@ void test_graph_constructor_2(void);
 void test_graph_edge_add(void);
 void test_graph_neighbors_get(void);
 void test_graph_edge_exists(void);
+void test_graph_all_possible_edges_generate(void);
 
 int main(void)
 {
@@ -31,6 +32,7 @@ int main(void)
     test_graph_edge_add();
     test_graph_neighbors_get();
     test_graph_edge_exists();
+    test_graph_all_possible_edges_generate();
     return 0;
 }
 
@@ -120,4 +122,24 @@ void test_graph_edge_exists(void)
 
     assert(found == false);
     assert(found_index == ~0);
+}
+
+void test_graph_all_possible_edges_generate(void)
+{
+    cout << __func__ << endl;
+
+    Graph graph(3);
+    vector<Edge> all_gen = graph.all_possible_edges_generate();
+    Graph full_graph(graph.nb_vertices_get(), all_gen);
+
+    assert(all_gen.size() == (3 * 2) / 2);
+
+    for (int i = 0; i < full_graph.nb_vertices_get(); ++i) {
+        for (int j = 0; j < full_graph.nb_vertices_get(); ++j) {
+            if (i != j) {
+                Edge edge(i, j, 1.0);
+                assert(full_graph.edge_exists(edge));
+            }
+        }
+    }
 }
