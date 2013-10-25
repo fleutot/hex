@@ -122,9 +122,30 @@ int Graph::nb_edges_get(void)
     return edge_list.size();
 }
 
+//  ----------------------------------------------------------------------------
+/// \brief  Check if an edge exists, regardless of cost.
+/// \return True if the edge existed.
+/// \return index: the index in the edge list if the edge existed.
+//  ----------------------------------------------------------------------------
+bool Graph::edge_exists(const Edge edge, int& index)
+{
+    for (unsigned int i = 0; i < edge_list.size(); ++i) {
+        if ((edge.start_get() == edge_list[i].start_get())
+            && (edge.end_get() == edge_list[i].end_get())
+            ) {
+            index = i;
+            return true;
+        }
+    }
+    return false;
+}
+
 void Graph::edge_add(const Edge new_edge)
 {
-    // Check first that the edge does not exist already.
+    // Check first that the edge does not exist already, even if it has a
+    // different cost.
+
+
     edge_list.push_back(new_edge);
 }
 

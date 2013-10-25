@@ -20,6 +20,7 @@ void test_graph_constructor_1(void);
 void test_graph_constructor_2(void);
 void test_graph_edge_add(void);
 void test_graph_neighbors_get(void);
+void test_graph_edge_exists(void);
 
 int main(void)
 {
@@ -29,6 +30,7 @@ int main(void)
     test_graph_constructor_2();
     test_graph_edge_add();
     test_graph_neighbors_get();
+    test_graph_edge_exists();
     return 0;
 }
 
@@ -88,4 +90,32 @@ void test_graph_neighbors_get(void)
     vector<int> neighbors = graph.neighbors_get(2);
 
     assert(neighbors.size() == 3);
+}
+
+void test_graph_edge_exists(void)
+{
+    cout << __func__ << endl;
+
+    Graph graph(5);
+
+    Edge e1(2, 3, 2.0);
+    Edge e2(2, 4, 2.0);
+
+    Edge e3(2, 3, 4.0);
+
+    graph.edge_add(e1);
+    graph.edge_add(e2);
+
+    int found_index = ~0;
+    bool found = graph.edge_exists(e3, found_index);
+
+    assert(found == true);
+    assert(found_index != ~0);
+
+    found_index = ~0;
+    Edge e4(3, 1, 2.0);
+    found = graph.edge_exists(e4, found_index);
+
+    assert(found == false);
+    assert(found_index == ~0);
 }

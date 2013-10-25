@@ -33,6 +33,7 @@ public:
     ~Graph(void);
     int nb_vertices_get(void);
     int nb_edges_get(void);
+    bool edge_exists(const Edge edge, int& index);
     void edge_add(Edge new_edge);
     bool adjacent_check(const int node_a, const int node_b);
     std::vector<int> neighbors_get(const int node);
