@@ -83,15 +83,12 @@ void test_graph_edge_add(void)
     cout << __func__ << endl;
     Graph graph(5);
 
-    Edge e1(1, 2, 2.0);
-    Edge e2(1, 3, 2.0);
-    Edge e3(2, 3, 2.0);
-    Edge e4(1, 3, 3.0);
-
-    graph.edge_add(e1);
-    graph.edge_add(e2);
-    graph.edge_add(e3);
-    graph.edge_add(e4); // Edge exists already, not added.
+    graph.edge_add(1, 2, 2.0);
+    graph.edge_add(1, 3, 2.0);
+    graph.edge_add(2, 3, 2.0);
+    cout << "Expected warning for adding an edge that already exists:" << endl;
+    cout << "    ";
+    graph.edge_add(1, 3, 3.0); // Edge exists already, not added.
 
     assert(graph.nb_edges_get() == 3);
 }
@@ -101,13 +98,9 @@ void test_graph_neighbors_get(void)
     cout << __func__ << endl;
     Graph graph(5);
 
-    Edge e1(2, 3, 2.0);
-    Edge e2(2, 4, 2.0);
-    Edge e3(2, 1, 2.0);
-
-    graph.edge_add(e1);
-    graph.edge_add(e2);
-    graph.edge_add(e3);
+    graph.edge_add(2, 3, 2.0);
+    graph.edge_add(2, 4, 2.0);
+    graph.edge_add(2, 1, 2.0);
 
     vector<int> neighbors = graph.neighbors_get(2);
 
@@ -120,23 +113,17 @@ void test_graph_edge_exists(void)
 
     Graph graph(5);
 
-    Edge e1(2, 3, 2.0);
-    Edge e2(2, 4, 2.0);
-
-    Edge e3(2, 3, 4.0);
-
-    graph.edge_add(e1);
-    graph.edge_add(e2);
+    graph.edge_add(2, 3, 2.0);
+    graph.edge_add(2, 4, 2.0);
 
     int found_index = ~0;
-    bool found = graph.edge_exists(e3, found_index);
+    bool found = graph.edge_exists(2, 3, found_index);
 
     assert(found == true);
     assert(found_index != ~0);
 
     found_index = ~0;
-    Edge e4(3, 1, 2.0);
-    found = graph.edge_exists(e4, found_index);
+    found = graph.edge_exists(3, 1, found_index);
 
     assert(found == false);
     assert(found_index == ~0);
@@ -146,17 +133,18 @@ void test_graph_all_possible_edges_generate(void)
 {
     cout << __func__ << endl;
 
-    Graph graph(3);
+    const int nb_vertices = 3;
+
+    Graph graph(nb_vertices);
     vector<Edge> all_gen = graph.all_possible_edges_generate();
     Graph full_graph(graph.nb_vertices_get(), all_gen);
 
-    assert(all_gen.size() == (3 * 2) / 2);
+    assert(all_gen.size() == (nb_vertices * (nb_vertices - 1)) / 2);
 
     for (int i = 0; i < full_graph.nb_vertices_get(); ++i) {
         for (int j = 0; j < full_graph.nb_vertices_get(); ++j) {
             if (i != j) {
-                Edge edge(i, j, 1.0);
-                assert(full_graph.edge_exists(edge));
+                assert(full_graph.edge_exists(i, j));
             }
         }
     }

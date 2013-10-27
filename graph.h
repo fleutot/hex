@@ -40,10 +40,12 @@ public:
     void print(void);
     int nb_vertices_get(void);
     int nb_edges_get(void);
-    bool edge_exists(const Edge edge, int& index);
-    bool edge_exists(const Edge edge);
-    void edge_add(Edge new_edge);
-    void edge_cost_update(Edge& edge);
+    bool edge_exists(int start, int end, int& index);
+    bool edge_exists(int start, int end);
+    void edge_add(int start, int end, const cost_t cost);
+    void edge_cost_update(int start, int end, const cost_t cost);
+    cost_t edge_cost_get(int start, int end);
+    void edge_cost_set(int start, int end, const cost_t cost);
     bool adjacent_check(const int node_a, const int node_b);
     std::vector<Edge> all_possible_edges_generate(void);
     std::vector<int> neighbors_get(const int node);
