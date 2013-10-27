@@ -4,13 +4,13 @@
    edges, one for random generation.
 ** DONE Add edges
    Positive cost, undirected (think of connectivity matrix, only a triangle
-   matix).
+   matrix).
 ** TODO Dijkstra's algorithm as a member function
 
 
-* TODO Random initialization of graphes
-** TODO As a procedure or as a constructor
-** TODO edge density and distance range as parameters
+* DONE Random initialization of graphes
+** DONE As a procedure or as a constructor
+** DONE edge density and distance range as parameters
    Pick a number of edges randomly from all possible edges (not a probabililty
    of being an edge, for all edges).
 
@@ -25,10 +25,12 @@
    from vertix 1 to all others (omit the value if no path is found).
 
 * TODO Running changes
-** TODO edge_add() must check if the edge does not already exist
-** TODO reuse Edge::Edge(int, int) inside Edge::Edge(int, int, cost_t)?
-** TODO change operator<< of graph
+** DONE edge_add() must check if the edge does not already exist
+** DONE reuse Edge::Edge(int, int) inside Edge::Edge(int, int, cost_t)?
+** DONE change operator<< of graph
    To use a function of the type graph.edge_cost_get(edge).
-** TODO make Edge internal to Graph. All functions of Graph can use x, y.
-** TODO check the return value of random_cost_calculate().
+** DONE make Edge internal to Graph. All functions of Graph can use x, y.
+   Nearly doable. A constructor still uses Edge as input, and the function
+   generating all possible edges for a graph still output a vector of Edges.
+** DONE check the return value of random_cost_calculate().
    Does it really give full span?

@@ -76,28 +76,6 @@ Edge::Edge(int start, int end, cost_t cost)
     this->cost = cost;
 }
 
-//  ----------------------------------------------------------------------------
-/// \brief  Create an edge with no cost, use to create temp edges, for example
-/// as input parameter to edge_exists.
-/// \param  start, end: vertices indexes.
-//  ----------------------------------------------------------------------------
-Edge::Edge(int start, int end)
-{
-    if (start == end) {
-        cout << "Created an edge with same start and end! (" << start
-             << ")" << endl;
-        exit(1);
-    } else if (start > end) {
-        // Edges are undirected, have always start < end as a convention.
-        // This may speed up searches.
-        this->start = end;
-        this->end = start;
-    } else {
-        this->start = start;
-        this->end = end;
-    }
-}
-
 Edge::~Edge()
 {
     // Nothing to do
@@ -169,7 +147,6 @@ Graph::~Graph(void)
     // Nothing to deallocate.
 }
 
-
 //  ----------------------------------------------------------------------------
 /// \brief  Display function for graphes
 //  ----------------------------------------------------------------------------
@@ -211,7 +188,6 @@ ostream& operator<<(ostream& os, Graph graph)
     }
     return os;
 }
-
 
 int Graph::nb_vertices_get(void)
 {
@@ -290,6 +266,11 @@ void Graph::edge_cost_set(int start, int end, const cost_t cost)
     }
 }
 
+//  ----------------------------------------------------------------------------
+/// \brief  Get the cost of an edge. Returns 0 if the edge was not found.
+/// \param  start, end.
+/// \return The cost of the edge, 0 if there is no such edge.
+//  ----------------------------------------------------------------------------
 cost_t Graph::edge_cost_get(int start, int end)
 {
     cost_t cost = 0;

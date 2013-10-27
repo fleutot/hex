@@ -8,10 +8,11 @@ contradicts:
 "So a graph whose density is 0.1 would have 10% of its edges picked at
 random and its edge distance would be selected at random from the
 distance range."
+
 The first alternative does not guarantee that the correct number of
 edges be created. I implemented the second alternative instead, where
-the correct number of edges are picked, only the ones being picked is
-random.
+the correct number of edges are picked, it is only which ones are picked
+which is random.
 
 * int Edge::start_get(void) const
 The "const" at the end of the function header applies to the "this"
@@ -19,6 +20,8 @@ pointer. This allows to call edge.start_get() in another function, even
 if the edge is being declared const.
 Otherwise, trying to take away the const gives a compilation error.
 
-
+* control of output
+iomanip contains functions to set the field width, and double precision
+of iostream output.
 
 Variable name "new_edge": no pun intended :)
