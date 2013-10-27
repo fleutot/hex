@@ -28,4 +28,7 @@
 ** TODO edge_add() must check if the edge does not already exist
 ** TODO reuse Edge::Edge(int, int) inside Edge::Edge(int, int, cost_t)?
 ** TODO change operator<< of graph
-   To use a function of the type graph.edge_cost_get(edge) .
+   To use a function of the type graph.edge_cost_get(edge).
+** TODO make Edge internal to Graph. All functions of Graph can use x, y.
+** TODO check the return value of random_cost_calculate().
+   Does it really give full span?

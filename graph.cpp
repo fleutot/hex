@@ -38,13 +38,25 @@ vector<T> random_pick(vector<T> input, const int nb_out)
 /// the second one.
 //----------------------------------------------------------------------------
 template <class T>
-void reorder_values(T& a, T& b)
+static void reorder_values(T& a, T& b)
 {
     if (b < a) {
         T temp = b;
         b = a;
         a = temp;
     }
+}
+
+
+//  ----------------------------------------------------------------------------
+/// \brief  Calculate a random cost between 1.0 and max_cost.
+/// Note: this would not work if cost_t was integer.
+/// \param  Max cost
+/// \return Random cost.
+//  ----------------------------------------------------------------------------
+static cost_t random_cost_calculate(const cost_t max_cost)
+{
+    return (static_cast<cost_t> (rand()) / RAND_MAX) * (max_cost - 1) + 1;
 }
 
 Edge::Edge(int start, int end, cost_t cost)
@@ -137,11 +149,16 @@ Graph::Graph(const int nb_vertices,
     this->nb_vertices = nb_vertices;
 
     // -1 because there are no edges from a vertex to itself.
+    // /2 because edges are undirectional.
     int nb_edges = static_cast<int> (nb_vertices * (nb_vertices - 1)
-                                     * edge_density);
+                                     * edge_density / 2);
 
     vector<Edge> possible_edges = all_possible_edges_generate();
     edge_list = random_pick(possible_edges, nb_edges);
+
+    for (unsigned i = 0; i < edge_list.size(); ++i) {
+        edge_list[i].cost_set(random_cost_calculate(max_cost));
+    }
 }
 
 //  ----------------------------------------------------------------------------
@@ -262,7 +279,7 @@ void Graph::edge_add(const Edge new_edge)
 //  ----------------------------------------------------------------------------
 void Graph::edge_cost_update(Edge& edge)
 {
-    int found_index;
+    int found_index = 0;
     bool found = edge_exists(edge, found_index);
     if (found) {
         edge.cost_set(edge_list[found_index].cost_get());

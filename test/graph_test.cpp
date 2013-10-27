@@ -66,15 +66,15 @@ void test_graph_constructor_3(void)
 {
     cout << __func__ << endl;
 
-    const int nb_vertices = 50;
+    const int nb_vertices = 8;
     const double edge_density = 0.5;
 
-    Graph graph(50, 0.5, 10);
+    Graph graph(nb_vertices, 0.5, 10);
 
     assert(graph.nb_edges_get()
            == static_cast<int> (nb_vertices
                                 * (nb_vertices - 1)
-                                * edge_density));
+                                * edge_density / 2));
     cout << graph;
 }
 
