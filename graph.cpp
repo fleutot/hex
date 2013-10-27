@@ -200,7 +200,8 @@ ostream& operator<<(ostream& os, Graph graph)
             } else {
                 cost_t cost = graph.edge_cost_get(i, j);
                 if (cost > 0) {
-                    os << setw(slot_width) << cost;
+                    os << setprecision(slot_width - 2) << setw(slot_width)
+                       << cost;
                 } else {
                     os << setw(slot_width) << " ";
                 }
