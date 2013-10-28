@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Ostervall
+Copyright (c) 2013 Gauthier Östervall
 ----------------------------------------------------------------------------*/
 #include "prioqueue.h"
 
@@ -8,6 +8,15 @@ Copyright (c) 2013 Gauthier Ostervall
 
 using namespace std;
 
+ostream& operator<<(ostream& os, Prioqueue queue_object)
+{
+    queue_object.print(os);
+    return os;
+}
+
+//******************************************************************************
+// Class implementation
+//******************************************************************************
 Prioqueue::Prioqueue(void)
 {
     queue_size = 0;
@@ -63,4 +72,11 @@ bool Prioqueue::contains(const int id)
 unsigned Prioqueue::size(void)
 {
     return queue_size;
+}
+
+void Prioqueue::print(ostream& os)
+{
+    for (list<Node>::iterator it = queue.begin(); it != queue.end(); ++it) {
+        os << "(id = " << it->id << ", prio = " << it->prio << ")" << endl;
+    }
 }
