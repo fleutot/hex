@@ -19,6 +19,7 @@ The "const" at the end of the function header applies to the "this"
 pointer. This allows to call edge.start_get() in another function, even
 if the edge is being declared const.
 Otherwise, trying to take away the const gives a compilation error.
+This is interesting for member function that must not modify the object.
 
 * control of output
 iomanip contains functions to set the field width, and double precision
@@ -33,10 +34,20 @@ std::vector.size(), to avoid type mismatch warnings. Leaving out the "int" in
 
 * iterator
 Iterators seemed obscure at first, but are easier to use than I thought. I am
-not yet sure why they are better than just going of indeces, but they seem the
-canonical way to deal with vectors and lists.
+not yet sure why they are better than just going for indeces, but they seem the
+standard way to deal with vectors and lists.
 
 * list
 I implemented the priority queue as a vector first, until I found the class
 list. It allows to insert elements in the middle without the need to shift the
 rest of the elements.
+
+* using namespace
+I learned it is bad practice to have "using namespace" in header files, it might
+change the meaning of the code in files that include the header. I keep
+forgetting the "std::" needed in the header files, though.
+
+* default parameter in function definition
+Unlike C, where "void func()" says that func() takes any number of parameters,
+C++ makes it void, the default. I haven't replaces the function definitions
+where I wrote void, but will not have it in the future.

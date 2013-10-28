@@ -20,14 +20,15 @@ public:
 
     void add(const int id, const int prio);
     void remove(const int id);
+    void prio_set(const int id, const int prio);
     bool contains(const int id);
     unsigned size(void);
     int top(void);
+    int pop_top(void);
     void print(std::ostream& os);
 
 private:
     std::list<Node> queue;
-    unsigned queue_size;
 };
 
 std::ostream& operator<<(std::ostream& os, Prioqueue queue_object);

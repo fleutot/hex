@@ -19,7 +19,6 @@ ostream& operator<<(ostream& os, Prioqueue queue_object)
 //******************************************************************************
 Prioqueue::Prioqueue(void)
 {
-    queue_size = 0;
 }
 
 Prioqueue::~Prioqueue(void)
@@ -43,7 +42,6 @@ void Prioqueue::add(const int id, const int prio)
     }
 
     queue.insert(it, new_node);
-    queue_size = queue.size();
 }
 
 void Prioqueue::remove(const int id)
@@ -58,20 +56,41 @@ void Prioqueue::remove(const int id)
     }
 }
 
+void Prioqueue::prio_set(const int id, const int prio)
+{
+    if (contains(id)) {
+        // add does not create a new queue entry if the id is already
+        // present. It deals with placing the new entry at the right position.
+        add(id, prio);
+    }
+}
+
 bool Prioqueue::contains(const int id)
 {
-    for (list<Node>::iterator it = queue.begin();
-         it != queue.end();
-         ++it) {
+    for (list<Node>::iterator it = queue.begin(); it != queue.end(); ++it) {
         if (it->id == id) {
             return true;
         }
-    }    return false;
+    }
+    return false;
 }
 
 unsigned Prioqueue::size(void)
 {
-    return queue_size;
+    return queue.size();
+}
+
+int Prioqueue::top()
+{
+    Node first_node = queue.front();
+    return first_node.id;
+}
+
+int Prioqueue::pop_top()
+{
+    Node first_node = queue.front();
+    queue.pop_front();
+    return first_node.id;
 }
 
 void Prioqueue::print(ostream& os)
