@@ -25,3 +25,18 @@ iomanip contains functions to set the field width, and double precision
 of iostream output.
 
 Variable name "new_edge": no pun intended :)
+
+* New type
+"unsigned" can be used as a type. This is useful in for loops comparing to
+std::vector.size(), to avoid type mismatch warnings. Leaving out the "int" in
+"unsigned int" saves place and keystrokes.
+
+* iterator
+Iterators seemed obscure at first, but are easier to use than I thought. I am
+not yet sure why they are better than just going of indeces, but they seem the
+canonical way to deal with vectors and lists.
+
+* list
+I implemented the priority queue as a vector first, until I found the class
+list. It allows to insert elements in the middle without the need to shift the
+rest of the elements.
