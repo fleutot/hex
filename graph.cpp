@@ -11,6 +11,8 @@ Copyright (c) 2013 Gauthier Östervall
 
 using namespace std;
 
+const cost_t COST_MAX = numeric_limits<cost_t>::max();
+
 //  ----------------------------------------------------------------------------
 /// \brief  Pick a number of elements of a vector randomly.
 /// \param  input   The vector that contains data to pick from.
@@ -156,21 +158,21 @@ ostream& operator<<(ostream& os, Graph graph)
 
     os << setw(slot_width) << " ";
     // Labels
-    for (int i = 0; i < graph.nb_vertices_get(); ++i) {
+    for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
         os << setw(slot_width) << i;
     }
     os << endl;
 
     // A line
-    for (int i = 0; i <= graph.nb_vertices_get(); ++i) {
+    for (unsigned i = 0; i <= graph.nb_vertices_get(); ++i) {
         os << "-----";
     }
     os << endl;
 
     // The half matrix with costs.
-    for (int i = 0; i < graph.nb_vertices_get(); ++i) {
+    for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
         os << setw(slot_width - 1) << i << "|";
-        for (int j = 0; j < graph.nb_vertices_get(); ++j) {
+        for (unsigned j = 0; j < graph.nb_vertices_get(); ++j) {
             //cout << "here " << i << ", " << j << endl;
             if (j <= i) {
                 os << setw(slot_width) << " ";
@@ -189,12 +191,12 @@ ostream& operator<<(ostream& os, Graph graph)
     return os;
 }
 
-int Graph::nb_vertices_get(void)
+unsigned Graph::nb_vertices_get(void) const
 {
     return nb_vertices;
 }
 
-int Graph::nb_edges_get(void)
+unsigned Graph::nb_edges_get(void) const
 {
     return edge_list.size();
 }
@@ -204,7 +206,7 @@ int Graph::nb_edges_get(void)
 /// \return True if the edge existed.
 /// \return index: the index in the edge list if the edge existed.
 //  ----------------------------------------------------------------------------
-bool Graph::edge_exists(int start, int end, int& index)
+bool Graph::edge_exists(int start, int end, int& index) const
 {
     reorder_values(start, end);
     for (unsigned int i = 0; i < edge_list.size(); ++i) {
@@ -222,7 +224,7 @@ bool Graph::edge_exists(int start, int end, int& index)
 /// \brief  Check if an edge exists, regardless of cost.
 /// \return True if the edge existed.
 //  ----------------------------------------------------------------------------
-bool Graph::edge_exists(int start, int end)
+bool Graph::edge_exists(int start, int end) const
 {
     reorder_values(start, end);
     for (unsigned int i = 0; i < edge_list.size(); ++i) {
@@ -271,7 +273,7 @@ void Graph::edge_cost_set(int start, int end, const cost_t cost)
 /// \param  start, end.
 /// \return The cost of the edge, 0 if there is no such edge.
 //  ----------------------------------------------------------------------------
-cost_t Graph::edge_cost_get(int start, int end)
+cost_t Graph::edge_cost_get(int start, int end) const
 {
     cost_t cost = 0;
 
@@ -319,14 +321,14 @@ vector<Edge> Graph::all_possible_edges_generate(void)
 //  ----------------------------------------------------------------------------
 /// \brief  Lists all nodes y such that there is an edge from node to y.
 //  ----------------------------------------------------------------------------
-vector<int> Graph::neighbors_get(const int node)
+vector<int> Graph::neighbors_get(const int node) const
 {
     vector<int> neighbors;
     for (unsigned int i = 0; i < edge_list.size(); ++i) {
-        if ((edge_list[i].start_get() == node)
-            || (edge_list[i].end_get() == node)
-            ){
+        if (edge_list[i].start_get() == node) {
             neighbors.push_back(edge_list[i].end_get());
+        } else if (edge_list[i].end_get() == node) {
+            neighbors.push_back(edge_list[i].start_get());
         }
     }
     return neighbors;

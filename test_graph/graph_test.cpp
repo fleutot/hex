@@ -100,11 +100,14 @@ void test_graph_neighbors_get(void)
 
     graph.edge_add(2, 3, 2.0);
     graph.edge_add(2, 4, 2.0);
-    graph.edge_add(2, 1, 2.0);
+    graph.edge_add(1, 2, 2.0);
 
     vector<int> neighbors = graph.neighbors_get(2);
 
     assert(neighbors.size() == 3);
+    assert(neighbors[0] == 3);
+    assert(neighbors[1] == 4);
+    assert(neighbors[2] == 1);
 }
 
 void test_graph_edge_exists(void)
@@ -141,8 +144,8 @@ void test_graph_all_possible_edges_generate(void)
 
     assert(all_gen.size() == (nb_vertices * (nb_vertices - 1)) / 2);
 
-    for (int i = 0; i < full_graph.nb_vertices_get(); ++i) {
-        for (int j = 0; j < full_graph.nb_vertices_get(); ++j) {
+    for (unsigned i = 0; i < full_graph.nb_vertices_get(); ++i) {
+        for (unsigned j = 0; j < full_graph.nb_vertices_get(); ++j) {
             if (i != j) {
                 assert(full_graph.edge_exists(i, j));
             }
