@@ -25,7 +25,7 @@ Prioqueue::~Prioqueue(void)
 {
 }
 
-void Prioqueue::add(const int id, const int prio)
+void Prioqueue::add(const int id, const double prio)
 {
     if (contains(id)) {
         remove(id);
@@ -56,7 +56,7 @@ void Prioqueue::remove(const int id)
     }
 }
 
-void Prioqueue::prio_set(const int id, const int prio)
+void Prioqueue::prio_set(const int id, const double prio)
 {
     if (contains(id)) {
         // add does not create a new queue entry if the id is already
@@ -80,13 +80,13 @@ unsigned Prioqueue::size(void)
     return queue.size();
 }
 
-int Prioqueue::top()
+double Prioqueue::top()
 {
     Node first_node = queue.front();
     return first_node.id;
 }
 
-int Prioqueue::pop_top()
+double Prioqueue::pop_top()
 {
     Node first_node = queue.front();
     queue.pop_front();

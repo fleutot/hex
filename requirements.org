@@ -34,3 +34,7 @@
    generating all possible edges for a graph still output a vector of Edges.
 ** DONE check the return value of random_cost_calculate().
    Does it really give full span?
+** TODO graph constructor with edges sanity check
+   check that the edge start and end points are within range.
+** TODO template for type of prio in Node.
+   To be able to make prio a cost_t.

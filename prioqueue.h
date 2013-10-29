@@ -10,7 +10,7 @@ Copyright (c) 2013 Gauthier Östervall
 
 struct Node {
     int id;
-    int prio;
+    double prio;
 };
 
 class Prioqueue {
@@ -18,13 +18,13 @@ public:
     Prioqueue(void);
     ~Prioqueue(void);
 
-    void add(const int id, const int prio);
+    void add(const int id, const double prio);
     void remove(const int id);
-    void prio_set(const int id, const int prio);
+    void prio_set(const int id, const double prio);
     bool contains(const int id);
     unsigned size(void);
-    int top(void);
-    int pop_top(void);
+    double top(void);
+    double pop_top(void);
     void print(std::ostream& os);
 
 private:
