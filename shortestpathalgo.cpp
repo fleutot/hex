@@ -23,55 +23,45 @@ ShortestPathAlgo::~ShortestPathAlgo()
 
 cost_t ShortestPathAlgo::shortest_path_calculate(const int start, const int end)
 {
-    cost_t shortest_path_distance = COST_MAX;
+    origin = start;
     target = end;
 
-    cout << "COST_MAX: " << COST_MAX << endl;
-    for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
-        unvisited.add(i, COST_MAX);
-        distance[i] = COST_MAX;
-        cout << "d" << i << ": " << distance[i] << ", ";
-    }
-    cout << endl;
-    cout << unvisited << endl;
+    dijkstra_init();
+
     current = start;
     distance[current] = 0;
+
     bool done = false;
-    cout << "Size of distance: " << distance.size() << endl;
-
-    cout << graph << endl;
-
     while (!done) {
         dijkstra_iterate();
         done = all_targets_done() || one_target_done();
     }
-
-    cout << "distance from " << start << " to " << end << ": " << distance[current] << endl;
-
-    return shortest_path_distance;
+    return distance[current];
 }
 
 vector<cost_t> ShortestPathAlgo::shortest_pathes_calculate(const int start)
 {
-    cout << "COST_MAX: " << COST_MAX << endl;
-    for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
-        unvisited.add(i, COST_MAX);
-        distance[i] = COST_MAX;
-    }
+    origin = start;
+    dijkstra_init();
+
     current = start;
     distance[current] = 0;
-    bool done = false;
 
+    bool done = false;
     while (!done) {
         dijkstra_iterate();
         done = all_targets_done();
     }
-    cout << "all distances: {";
-    for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
-        cout << distance[i] << ", ";
-    }
-    cout << endl;
+
     return distance;
+}
+
+void ShortestPathAlgo::dijkstra_init()
+{
+    for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
+        unvisited.add(i, COST_MAX);
+        distance[i] = COST_MAX;
+    }
 }
 
 void ShortestPathAlgo::dijkstra_iterate()
@@ -110,6 +100,11 @@ void ShortestPathAlgo::dijkstra_iterate()
 bool ShortestPathAlgo::all_targets_done()
 {
     return ((unvisited.top() == COST_MAX) || (unvisited.size() == 0));
+}
+
+int ShortestPathAlgo::origin_get()
+{
+    return origin;
 }
 
 bool ShortestPathAlgo::one_target_done()
