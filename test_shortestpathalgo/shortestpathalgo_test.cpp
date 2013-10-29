@@ -15,7 +15,7 @@ using namespace std;
 // Function prototypes
 //******************************************************************************
 static void test_shortestpathalgo_constructor();
-static void test_shortestpathalgo_shortest_path_calculate();
+static void test_shortestpathalgo_shortest_pathes_calculate();
 
 //******************************************************************************
 // Function definitions
@@ -23,7 +23,7 @@ static void test_shortestpathalgo_shortest_path_calculate();
 int main(void)
 {
     test_shortestpathalgo_constructor();
-    test_shortestpathalgo_shortest_path_calculate();
+    test_shortestpathalgo_shortest_pathes_calculate();
 }
 
 
@@ -45,7 +45,7 @@ static void test_shortestpathalgo_constructor()
     cout << "done" << endl;
 }
 
-static void test_shortestpathalgo_shortest_path_calculate()
+static void test_shortestpathalgo_shortest_pathes_calculate()
 {
     cout << __func__ << endl;
 
@@ -70,8 +70,8 @@ static void test_shortestpathalgo_shortest_path_calculate()
     Graph graph(5, edges);
     ShortestPathAlgo algo(graph);
 
-    //for (unsigned i = 1; i < graph.nb_vertices_get(); ++i) {
-    //    cout << algo.shortest_path_calculate(0, i);
-    //}
-    cout << algo.shortest_path_calculate(0, 2);
+    vector<cost_t> all_distances = algo.shortest_pathes_calculate(0);
+    for (vector<cost_t>::iterator it = all_distances.begin(); it != all_distances.end(); ++it) {
+        cout << *it << "  ";
+    }
 }
