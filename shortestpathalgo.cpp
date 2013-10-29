@@ -64,36 +64,30 @@ void ShortestPathAlgo::dijkstra_init()
     }
 }
 
+//  ----------------------------------------------------------------------------
+/// \brief  One loop of the Dijkstra algorithm, as per the Wikipedia page:
+/// http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+//  ----------------------------------------------------------------------------
 void ShortestPathAlgo::dijkstra_iterate()
 {
-    cout << "--------------------" << endl;
-    cout << "current: " << current << endl;
     vector<int> neighbors = graph.neighbors_get(current);
-    cout << "nb neighbors: " << neighbors.size() << endl;
-    cout << "unvisited: " << endl << unvisited;
 
     vector<int>::iterator it;
     for (it = neighbors.begin(); it != neighbors.end(); ++it) {
-        cout << "neighbor: " << *it;
         if (unvisited.contains(*it)) {
-            cout << ", unvisited";
             // *it is an unvisited neighbor, calculate its tentative distance
             // and set it if it is less than the existing one.
             cost_t tentative_distance = distance[current]
                 + graph.edge_cost_get(current, *it);
-            cout << ", tentative: " << tentative_distance << ", dist: " << distance[*it];
 
             if (tentative_distance < distance[*it]) {
-                cout << ", new distance for " << *it;
                 distance[*it] = tentative_distance;
                 unvisited.prio_set(*it, tentative_distance);
             }
         }
-        cout << endl;
     }
     // Done updating all neighbors of current, mark as visited.
     unvisited.remove(current);
-
     current = unvisited.top();
 }
 
