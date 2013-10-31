@@ -1,18 +1,37 @@
+This assignement taught me about how to build classes. One thing that annoys me
+is the fact that private members of a class are displayed in the header
+files. For true encapsulation, I feel that private members need not only to be
+inaccessible (private), but also hidden.
+
+Iterators are interesting, but I do not really see what advantages they give
+compared to simple loop counters yet.
+
+The iomanip function to help the output stream are also interesting, but I find
+they could be less cumbersome. For example setw() could automatically work on
+type double to display no more than the specified width.
+
+I enjoyed writing short functions, it feels that objects make it easier, since
+they hold all the values necessary to the computations.
+
+The Dijkstra algorithm can be run once with an origin node, against all other
+nodes as targets. Instead of finding shortest path from a to b, it can be run
+from a to all other points at once, reducing the computation time greatly (by a
+factor 50 in this case).
+
+Overloading the operator<< feels also great, I love the idea of making the print
+process seamless to the user of a class.
+
+
+--------------------------------------------------------------------------------
+More detailed thoughts I had while programming (not to include in the 200 words
+write-up, do not read if you do not want to)
+
 * Random selection of edges
-
-In the instruction:
-"The procedure should run through all possible undirected edges, say
-(i,j) and place the edge in the graph if a random probability
-calculation is less than the density." 
-contradicts:
-"So a graph whose density is 0.1 would have 10% of its edges picked at
-random and its edge distance would be selected at random from the
-distance range."
-
-The first alternative does not guarantee that the correct number of
-edges be created. I implemented the second alternative instead, where
-the correct number of edges are picked, it is only which ones are picked
-which is random.
+The instruction is ambiguous as how to create a random graph. Rather than
+considering all possible edges and creating an actual one with a given
+probability - which not guarantee that the correct number of edges be created -
+I pick the correct amount of edges (deterministic), it is only which ones are
+picked which is random.
 
 * int Edge::start_get(void) const
 The "const" at the end of the function header applies to the "this"
@@ -36,6 +55,10 @@ std::vector.size(), to avoid type mismatch warnings. Leaving out the "int" in
 Iterators seemed obscure at first, but are easier to use than I thought. I am
 not yet sure why they are better than just going for indeces, but they seem the
 standard way to deal with vectors and lists.
+I had troubles running iterators with templates, "vector<T>::iterator it" did
+not work well. Using the keyword "typename" seems to be the solution, but for
+iterating through a whole vector, it is just easier to have classical loop
+counter. I might be missing something.
 
 * list
 I implemented the priority queue as a vector first, until I found the class

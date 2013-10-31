@@ -1,9 +1,9 @@
 CC = g++
 CFLAGS = -Wall -Werror -O3
 
-SRC = ../shortestpathalgo.cpp ../graph.cpp ../prioqueue.c shortestpathalgo_test.cpp
+SRC = graph.cpp prioqueue.cpp shortestpathalgo.cpp average_shortest_path.cpp
 OBJ = $(SRC:.cpp=.o)
-TARGET = shortestpathalgo_test
+TARGET = average_shortest_path
 
 all: $(TARGET)
 
@@ -14,7 +14,7 @@ $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -cpp $< -o $@
 
 clean:
-	$(RM) ../*.o *.o $(TARGET)
+	$(RM) *.o $(TARGET)
 
-test: $(TARGET)
+run: $(TARGET)
 	./$(TARGET)

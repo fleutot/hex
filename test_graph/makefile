@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -Wall -Werror -O3
 
 SRC = ../graph.cpp graph_test.cpp
-OBJ = $(SRC:.c=.o)
+OBJ = $(SRC:.cpp=.o)
 TARGET = graph_test
 
 all: $(TARGET)
