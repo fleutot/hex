@@ -1,5 +1,7 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+Prioqueue class implementation.
+A prioqueue is a list of Nodes, ordered by prio. The top of the queue is the
+node with lowest value in its field "prio".
 ----------------------------------------------------------------------------*/
 
 #ifndef PRIOQUEUE_H_INCLUDED
@@ -8,6 +10,7 @@ Copyright (c) 2013 Gauthier Östervall
 #include <iostream>
 #include <list>
 
+// Elements in the queue
 struct Node {
     int id;
     double prio;

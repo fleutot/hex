@@ -1,5 +1,8 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+Monte-carlo simulation, generate a number of random graphes, run the average
+shortest paths on each of them, and calculate an average on these average
+values.
+Do that for several densities.
 ----------------------------------------------------------------------------*/
 #include <cstdlib>
 #include <ctime>

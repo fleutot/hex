@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+Graph class implementation
 ----------------------------------------------------------------------------*/
 
 #include <iostream>
@@ -49,7 +49,6 @@ static void reorder_values(T& a, T& b)
     }
 }
 
-
 //  ----------------------------------------------------------------------------
 /// \brief  Calculate a random cost between 1.0 and max_cost.
 /// Note: this would not work if cost_t was integer.
@@ -61,6 +60,10 @@ static cost_t random_cost_calculate(const cost_t max_cost)
     return (static_cast<cost_t> (rand()) / RAND_MAX) * (max_cost - 1) + 1;
 }
 
+
+//  ----------------------------------------------------------------------------
+/// Class Edge
+//  ----------------------------------------------------------------------------
 Edge::Edge(int start, int end, cost_t cost)
 {
     if (start == end) {
@@ -110,24 +113,22 @@ void Edge::cost_set(const cost_t cost)
 /// which must be an actual edge.
 /// \param  max_cost    Maximal cost for any of the edges created.
 //  ----------------------------------------------------------------------------
-Graph::Graph(const int nb_vertices = 50)
+Graph::Graph(const int nb_vertices = 50): nb_vertices(nb_vertices)
 {
-    this->nb_vertices = nb_vertices;
 }
 
-Graph::Graph(const int nb_vertices, vector<Edge> edge_list)
+Graph::Graph(const int nb_vertices, vector<Edge> edge_list):
+    edge_list(edge_list),
+    nb_vertices(nb_vertices)
 {
-    this->nb_vertices = nb_vertices;
-    this->edge_list = edge_list;
 }
 
 // Constructor for a random graph.
 Graph::Graph(const int nb_vertices,
              const double edge_density,
-             const cost_t max_cost)
+             const cost_t max_cost):
+    nb_vertices(nb_vertices)
 {
-    this->nb_vertices = nb_vertices;
-
     // -1 because there are no edges from a vertex to itself.
     // /2 because edges are undirectional.
     int nb_edges = static_cast<int> (nb_vertices * (nb_vertices - 1)
@@ -286,7 +287,7 @@ cost_t Graph::edge_cost_get(int start, int end) const
     return cost;
 }
 
-bool Graph::adjacent_check(int node_a, int node_b)
+bool Graph::adjacent_check(int node_a, int node_b) const
 {
     // Make sure node_a has the lower value of the two, as it is the standard
     // for Edge to have start less than end.
@@ -301,7 +302,7 @@ bool Graph::adjacent_check(int node_a, int node_b)
     return false;
 }
 
-vector<Edge> Graph::all_possible_edges_generate(void)
+vector<Edge> Graph::all_possible_edges_generate(void) const
 {
     vector<Edge> all_edges;
     // No edges for a vertex to itself, thus the -1.

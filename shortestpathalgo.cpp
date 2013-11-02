@@ -1,5 +1,7 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+ShortestPathAlgo class implementation
+Dijkstra's shortest path algorithm, as per the Wikipedia page:
+/// http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 ----------------------------------------------------------------------------*/
 #include "shortestpathalgo.h"
 

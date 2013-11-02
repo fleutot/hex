@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+ShortestPathAlgo class implementation
 ----------------------------------------------------------------------------*/
 
 #ifndef SHORTESTPATHALGO_H_INCLUDED

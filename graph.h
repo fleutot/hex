@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+Graph class implementation
 ----------------------------------------------------------------------------*/
 
 #ifndef GRAPH_H_INCLUDED
@@ -36,18 +36,22 @@ public:
           const double edge_density,
           const cost_t max_cost);
     ~Graph(void);
-    void print(void);
+
+    void print(void);   // Use rather operator<< to display graphes.
     unsigned nb_vertices_get(void) const;
     unsigned nb_edges_get(void) const;
+    cost_t edge_cost_get(int start, int end) const;
+    bool adjacent_check(const int node_a, const int node_b) const;
+
     bool edge_exists(int start, int end, int& index) const;
     bool edge_exists(int start, int end) const;
+
     void edge_add(int start, int end, const cost_t cost);
-    void edge_cost_update(int start, int end, const cost_t cost);
-    cost_t edge_cost_get(int start, int end) const;
     void edge_cost_set(int start, int end, const cost_t cost);
-    bool adjacent_check(const int node_a, const int node_b);
-    std::vector<Edge> all_possible_edges_generate(void);
+
+    std::vector<Edge> all_possible_edges_generate(void) const;
     std::vector<int> neighbors_get(const int node) const;
+
 private:
     std::vector<Edge> edge_list;
     int nb_vertices;

@@ -10,8 +10,8 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
 
-.c.o:
-	$(CC) $(CFLAGS) -cpp $< -o $@
+%.o : %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	$(RM) *.o $(TARGET)

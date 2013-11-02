@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-Copyright (c) 2013 Gauthier Östervall
+Prioqueue class implementation
 ----------------------------------------------------------------------------*/
 #include "prioqueue.h"
 
@@ -25,16 +25,18 @@ Prioqueue::~Prioqueue(void)
 {
 }
 
+//  ----------------------------------------------------------------------------
+/// \brief  Insert a new node at the right position in the prioqueue.
+//  ----------------------------------------------------------------------------
 void Prioqueue::add(const int id, const double prio)
 {
     if (contains(id)) {
         remove(id);
     }
 
-    Node new_node = (Node) {
-        .id = id,
-        .prio = prio
-    };
+    Node new_node;
+    new_node.id = id;
+    new_node.prio = prio;
 
     list<Node>::iterator it = queue.begin();
     while ((it != queue.end()) && (it->prio < prio)) {

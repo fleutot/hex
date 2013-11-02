@@ -74,3 +74,6 @@ forgetting the "std::" needed in the header files, though.
 Unlike C, where "void func()" says that func() takes any number of parameters,
 C++ makes it void, the default. I haven't replaces the function definitions
 where I wrote void, but will not have it in the future.
+
+* compound literals
+Are apparently not a part of standard C++. They exist as an extension in g++ (not in 4.5.0 and below), but I don't want to use them if they're not standard. A pity.
