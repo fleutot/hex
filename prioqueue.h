@@ -21,6 +21,8 @@ public:
     Prioqueue(void);
     ~Prioqueue(void);
 
+    void clear(void);
+
     void add(const int id, const double prio);
     void remove(const int id);
     void prio_set(const int id, const double prio);

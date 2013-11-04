@@ -25,6 +25,11 @@ Prioqueue::~Prioqueue(void)
 {
 }
 
+void Prioqueue::clear(void)
+{
+    queue.clear();
+}
+
 //  ----------------------------------------------------------------------------
 /// \brief  Insert a new node at the right position in the prioqueue.
 //  ----------------------------------------------------------------------------

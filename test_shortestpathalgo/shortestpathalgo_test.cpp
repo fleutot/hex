@@ -17,6 +17,8 @@ using namespace std;
 static void test_shortestpathalgo_constructor();
 static void test_shortestpathalgo_shortest_path_calculate();
 static void test_shortestpathalgo_shortest_pathes_calculate();
+static void test_shortestpathalgo_shortestpath_from_origin_1();
+static void test_shortestpathalgo_shortestpath_from_origin_2();
 
 //******************************************************************************
 // Function definitions
@@ -26,6 +28,8 @@ int main(void)
     test_shortestpathalgo_constructor();
     test_shortestpathalgo_shortest_path_calculate();
     test_shortestpathalgo_shortest_pathes_calculate();
+    test_shortestpathalgo_shortestpath_from_origin_1();
+    test_shortestpathalgo_shortestpath_from_origin_2();
 }
 
 
@@ -107,3 +111,68 @@ static void test_shortestpathalgo_shortest_pathes_calculate()
     }
 }
 
+static void test_shortestpathalgo_shortestpath_from_origin_1()
+{
+    cout << __func__ << endl;
+
+    Edge e1(0, 1, 10.0);
+    Edge e2(0, 3, 30.0);
+    Edge e3(0, 4, 100.0);
+    Edge e4(1, 2, 50.0);
+    Edge e5(2, 4, 10.0);
+    Edge e6(3, 2, 20.0);
+    Edge e7(3, 4, 60.0);
+
+    vector<Edge> edges;
+    edges.push_back(e1);
+    edges.push_back(e2);
+    edges.push_back(e3);
+    edges.push_back(e4);
+    edges.push_back(e5);
+    edges.push_back(e6);
+    edges.push_back(e7);
+
+    Graph graph(5, edges);
+    ShortestPathAlgo algo(graph);
+
+    vector<cost_t> all_distances = algo.shortest_pathes_calculate(0);
+    vector<int> path = algo.shortest_path_from_origin(4);
+
+    int expected_path[] = {0, 3, 2, 4};
+
+    for (unsigned i = 0; i < path.size(); ++i) {
+        assert(expected_path[i] == path[i]);
+    }
+}
+
+static void test_shortestpathalgo_shortestpath_from_origin_2()
+{
+    cout << __func__ << endl;
+
+    // Test that no path is found if there is none.
+
+    Edge e1(0, 1, 10.0);
+    Edge e2(0, 3, 30.0);
+    // Edge e3(0, 4, 100.0); no edge to 4
+    Edge e4(1, 2, 50.0);
+    // Edge e5(2, 4, 10.0); no edge to 4
+    Edge e6(3, 2, 20.0);
+    // Edge e7(3, 4, 60.0); no edge to 4
+
+    vector<Edge> edges;
+    edges.push_back(e1);
+    edges.push_back(e2);
+    // edges.push_back(e3);
+    edges.push_back(e4);
+    // edges.push_back(e5);
+    edges.push_back(e6);
+    // edges.push_back(e7);
+
+    Graph graph(5, edges);
+    ShortestPathAlgo algo(graph);
+
+    vector<cost_t> all_distances = algo.shortest_pathes_calculate(0);
+    vector<int> path = algo.shortest_path_from_origin(4);
+
+    assert(path.size() == 0);
+}
