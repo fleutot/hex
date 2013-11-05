@@ -32,14 +32,19 @@ class Graph {
 public:
     Graph(const int nb_vertices);
     Graph(const int nb_vertices, std::vector<Edge> edge_list);
-    Graph(const int nb_vertices,
-          const double edge_density,
-          const cost_t max_cost);
+    Graph(const int nb_vertices, const double edge_density,
+          const cost_t min_cost, const cost_t max_cost);
     ~Graph(void);
 
     void print(void);   // Use rather operator<< to display graphes.
-    unsigned nb_vertices_get(void) const;
-    unsigned nb_edges_get(void) const;
+
+    inline unsigned nb_vertices_get(void) const {
+        return nb_vertices;
+    }
+    inline unsigned nb_edges_get(void) const {
+        return edge_list.size();
+    }
+
     cost_t edge_cost_get(int start, int end) const;
     bool adjacent_check(const int node_a, const int node_b) const;
 

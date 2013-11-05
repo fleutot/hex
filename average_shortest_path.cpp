@@ -17,6 +17,7 @@ using namespace std;
 const int nb_test_graphes = 1000;
 
 const int nb_vertices = 50;
+const cost_t min_cost = 1.0;
 const cost_t max_cost = 10.0;
 
 
@@ -49,7 +50,7 @@ inline double average(const vector<T> input, const T too_low_limit,
 //  ----------------------------------------------------------------------------
 double average_shortest_path_one_start(const double density)
 {
-    Graph graph(nb_vertices, density, max_cost);
+    Graph graph(nb_vertices, density, min_cost, max_cost);
     ShortestPathAlgo algo(graph);
 
     // Compute all distances from start point 0.

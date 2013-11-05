@@ -55,9 +55,11 @@ static void reorder_values(T& a, T& b)
 /// \param  Max cost
 /// \return Random cost.
 //  ----------------------------------------------------------------------------
-static cost_t random_cost_calculate(const cost_t max_cost)
+static cost_t random_cost_calculate(const cost_t min_cost,
+                                    const cost_t max_cost)
 {
-    return (static_cast<cost_t> (rand()) / RAND_MAX) * (max_cost - 1) + 1;
+    return (static_cast<cost_t> (rand()) / RAND_MAX) * (max_cost - min_cost)
+        + min_cost;
 }
 
 
@@ -126,6 +128,7 @@ Graph::Graph(const int nb_vertices, vector<Edge> edge_list):
 // Constructor for a random graph.
 Graph::Graph(const int nb_vertices,
              const double edge_density,
+             const cost_t min_cost,
              const cost_t max_cost):
     nb_vertices(nb_vertices)
 {
@@ -138,7 +141,7 @@ Graph::Graph(const int nb_vertices,
     edge_list = random_pick(possible_edges, nb_edges);
 
     for (unsigned i = 0; i < edge_list.size(); ++i) {
-        edge_list[i].cost_set(random_cost_calculate(max_cost));
+        edge_list[i].cost_set(random_cost_calculate(min_cost, max_cost));
     }
 }
 
@@ -190,16 +193,6 @@ ostream& operator<<(ostream& os, Graph graph)
         cout << endl;
     }
     return os;
-}
-
-unsigned Graph::nb_vertices_get(void) const
-{
-    return nb_vertices;
-}
-
-unsigned Graph::nb_edges_get(void) const
-{
-    return edge_list.size();
 }
 
 //  ----------------------------------------------------------------------------
