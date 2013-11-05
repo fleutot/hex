@@ -51,6 +51,8 @@ public:
     bool edge_exists(int start, int end, int& index) const;
     bool edge_exists(int start, int end) const;
 
+    const std::vector<Edge>& edge_list_get() const;
+
     void edge_add(int start, int end, const cost_t cost);
     void edge_cost_set(int start, int end, const cost_t cost);
 

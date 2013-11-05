@@ -246,6 +246,13 @@ void Graph::edge_add(int start, int end, const cost_t cost)
     edge_list.push_back(new_edge);
 }
 
+
+const vector<Edge>& Graph::edge_list_get() const
+{
+    return edge_list;
+}
+
+
 //  ----------------------------------------------------------------------------
 /// \brief  Set the cost of an edge. The edge must already exist, otherwise use
 /// edge_add().
