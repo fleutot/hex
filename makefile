@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -O3
+CFLAGS = -Wall -Werror -O3 -std=c++11
 
 SRC = graph.cpp prioqueue.cpp shortestpathalgo.cpp average_shortest_path.cpp
 OBJ = $(SRC:.cpp=.o)
