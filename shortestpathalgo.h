@@ -23,7 +23,8 @@ public:
 
 private:
     const Graph& graph;
-    Prioqueue unvisited;
+
+    Prioqueue<int> unvisited;
     std::vector<cost_t> distance;
     std::vector<int> previous;  // for each node, the previous node in the
                                 // shortest path from origin.

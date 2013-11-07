@@ -117,12 +117,14 @@ void Edge::cost_set(const cost_t cost)
 //  ----------------------------------------------------------------------------
 Graph::Graph(const int nb_vertices = 50): nb_vertices(nb_vertices)
 {
+    node_names_init();
 }
 
 Graph::Graph(const int nb_vertices, vector<Edge> edge_list):
     edge_list(edge_list),
     nb_vertices(nb_vertices)
 {
+    node_names_init();
 }
 
 // Constructor for a random graph.
@@ -143,6 +145,7 @@ Graph::Graph(const int nb_vertices,
     for (unsigned i = 0; i < edge_list.size(); ++i) {
         edge_list[i].cost_set(random_cost_calculate(min_cost, max_cost));
     }
+    node_names_init();
 }
 
 // Constructor with file input.
@@ -158,6 +161,7 @@ Graph::Graph(const string filename)
     while (ifp >> start >> end >> cost) {
         edge_add(start, end, cost);
     }
+    node_names_init();
 }
 
 //  ----------------------------------------------------------------------------
@@ -334,6 +338,29 @@ vector<Edge> Graph::all_possible_edges_generate(void) const
     return all_edges;
 }
 
+//  ----------------------------------------------------------------------------
+/// \brief  Return the identifier of a node.
+//  ----------------------------------------------------------------------------
+const int& Graph::node_get(const int index) const
+{
+    if ((index >= nb_vertices) || (index < 0)) {
+        cerr << __func__ << "index out of range!" << endl;
+        // What else to do?
+    }
+    return nodes[index];
+}
+
+//  ----------------------------------------------------------------------------
+/// \brief  Give a name of identifier to the nodes. So far only a number. Called
+/// by all constructors.
+//  ----------------------------------------------------------------------------
+void Graph::node_names_init()
+{
+    nodes.resize(nb_vertices);
+    for (int i = 0; i < nb_vertices; ++i) {
+        nodes[i] = i;
+    }
+}
 
 //  ----------------------------------------------------------------------------
 /// \brief  Lists all nodes y such that there is an edge from node to y.

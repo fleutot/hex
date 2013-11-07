@@ -42,10 +42,11 @@ static void test_shortestpathalgo_constructor()
 
     const int nb_vertices = 10;
     const double density = 0.5;
+    const cost_t min_cost = 1.0;
     const cost_t max_cost = 10;
 
     // Random graph.
-    Graph graph(nb_vertices, density, max_cost);
+    Graph graph(nb_vertices, density, min_cost, max_cost);
 
     ShortestPathAlgo algo(graph);
 }

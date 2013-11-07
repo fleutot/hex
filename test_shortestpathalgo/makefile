@@ -1,7 +1,7 @@
 CC = g++
-CFLAGS = -Wall -Werror -O3
+CFLAGS = -Wall -Werror -O3 -std=c++11
 
-SRC = ../shortestpathalgo.cpp ../graph.cpp ../prioqueue.cpp shortestpathalgo_test.cpp
+SRC = ../shortestpathalgo.cpp ../graph.cpp  shortestpathalgo_test.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = shortestpathalgo_test
 

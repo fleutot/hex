@@ -11,11 +11,15 @@ node with lowest value in its field "prio".
 #include <list>
 
 // Elements in the queue
+template <typename T>
 struct Node {
-    int id;
+    Node(const T& data, const double prio): data(data), prio(prio) {}
+
+    const T& data;
     double prio;
 };
 
+template <typename Data>
 class Prioqueue {
 public:
     Prioqueue(void);
@@ -23,19 +27,28 @@ public:
 
     void clear(void);
 
-    void add(const int id, const double prio);
-    void remove(const int id);
-    void prio_set(const int id, const double prio);
-    bool contains(const int id);
+    void add(const Data& data, const double prio);
+
+    void remove(const Data& data);
+    void prio_set(const Data& data, const double prio);
+
+    bool contains(const Data& data);
     unsigned size(void);
-    double top(void);
-    double pop_top(void);
+    Data top(void);
+    Data pop_top(void);
     void print(std::ostream& os);
 
 private:
-    std::list<Node> queue;
+    std::list< Node<Data> > queue;
 };
 
-std::ostream& operator<<(std::ostream& os, Prioqueue queue_object);
+template <typename T>
+std::ostream& operator<<(std::ostream& os, Prioqueue<T> queue_object);
+
+
+// The member functions' implementation needs to be included here, for client
+// modules to trigger code generation for the type they require.
+#include "prioqueue.t.hpp"
+
 
 #endif // PRIOQUEUE_H_INCLUDED

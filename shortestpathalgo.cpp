@@ -20,6 +20,7 @@ ShortestPathAlgo::ShortestPathAlgo(const Graph& graph):
     // Give room for distances for all nodes.
     distance.resize(graph.nb_vertices_get());
     previous.resize(graph.nb_vertices_get());
+
 }
 
 ShortestPathAlgo::~ShortestPathAlgo()
@@ -98,12 +99,15 @@ vector<int> ShortestPathAlgo::shortest_path_from_origin(const int end)
     return whole_trace;
 }
 
-
+//  ----------------------------------------------------------------------------
+/// \brief  Initialize data structures before running the Dijkstra shortest path
+/// algorithm.
+//  ----------------------------------------------------------------------------
 void ShortestPathAlgo::dijkstra_init()
 {
     unvisited.clear();
     for (unsigned i = 0; i < graph.nb_vertices_get(); ++i) {
-        unvisited.add(i, COST_MAX);
+        unvisited.add(graph.node_get(i), COST_MAX);
         distance[i] = COST_MAX;
         previous[i] = NO_PREVIOUS;
     }
@@ -117,8 +121,7 @@ void ShortestPathAlgo::dijkstra_iterate()
 {
     vector<int> neighbors = graph.neighbors_get(current);
 
-    vector<int>::iterator it;
-    for (it = neighbors.begin(); it != neighbors.end(); ++it) {
+    for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
         if (unvisited.contains(*it)) {
             // *it is an unvisited neighbor, calculate its tentative distance
             // and set it if it is less than the existing one.

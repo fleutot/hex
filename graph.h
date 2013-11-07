@@ -60,7 +60,12 @@ public:
     std::vector<Edge> all_possible_edges_generate(void) const;
     std::vector<int> neighbors_get(const int node) const;
 
+    const int& node_get(const int index) const;
+
 private:
+    void node_names_init();
+
+    std::vector<int> nodes;
     std::vector<Edge> edge_list;
     int nb_vertices;
 };
