@@ -152,14 +152,10 @@ Graph::Graph(const string filename)
 
     ifp >> nb_vertices;
 
-    // Checking for eof in the while condition does not work, since the eof
-    // needs to be first read in order to be detected in time. Breaking the
-    // while happens in the loop body.
-    while (true) {
-        int start, end;
-        cost_t cost;
-        ifp >> start >> end >> cost;
-        if (ifp.eof()) break;   // Just read end of file, do not add a new edge.
+    int start, end;
+    cost_t cost;
+
+    while (ifp >> start >> end >> cost) {
         edge_add(start, end, cost);
     }
 }
