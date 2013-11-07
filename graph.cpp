@@ -108,6 +108,19 @@ void Edge::cost_set(const cost_t cost)
     this->cost = cost;
 }
 
+// These operators are to recognize the edges' position, the cost they carry is
+// irrelevant.
+bool operator==(const Edge& a, const Edge& b)
+{
+    return ((a.start_get() == b.start_get()) && (a.end_get() == b.end_get()));
+}
+
+bool operator!=(const Edge& a, const Edge& b)
+{
+    return ((a.start_get() != b.start_get()) || (a.end_get() != b.end_get()));
+}
+
+
 //  ----------------------------------------------------------------------------
 /// \brief  Graph constructor
 /// \param  nb_vertices Number of vertices (nodes) to create.

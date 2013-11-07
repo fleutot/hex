@@ -14,18 +14,23 @@ extern const cost_t COST_MAX;
 
 class Edge {
 public:
-    Edge(int start, int end, cost_t cost);
+    Edge(int start = 0, int end = 0, cost_t cost = 0);
     Edge(int start, int end);
     ~Edge();
     int start_get(void) const;
     int end_get(void) const;
     cost_t cost_get(void) const;
     void cost_set(const cost_t cost);
+
 private:
     int start;
     int end;
     cost_t cost;
 };
+
+// These operators only check the vertices that the edges connect, not the cost.
+bool operator==(const Edge& a, const Edge& b);
+bool operator!=(const Edge& a, const Edge& b);
 
 
 class Graph {
