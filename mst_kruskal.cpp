@@ -11,6 +11,16 @@ MstKruskal class implementation
 
 using namespace std;
 
+MstKruskal::MstKruskal(const Graph& graph): mst_cost(0), graph(graph)
+{
+    // Init the vertex connection table as nothing connected.
+    vertex_connected.resize(graph.nb_vertices_get(), false);
+    // Init all trees, one vertex per tree.
+    trees.resize(graph.nb_vertices_get());
+    for (unsigned i = 0; i < trees.size(); ++i) {
+        trees[i].push_back(i);
+    }
+}
 
 //  ----------------------------------------------------------------------------
 /// \brief  Create a queue of all edges in the graph, sorted by cost (low cost
@@ -19,10 +29,9 @@ using namespace std;
 void MstKruskal::edge_queue_populate()
 {
     const vector<Edge>& all_edges = graph.edge_list_get();
-    //for (auto it = all_edges.begin(); it != all_edges.end(); ++it) {
-    for (auto edge : all_edges) {
+    for (auto it = all_edges.begin(); it != all_edges.end(); ++it) {
         // Filling the priority queue could be made more efficient.
-        edge_queue.add(edge, edge.cost_get());
+        edge_queue.add(*it, it->cost_get());
     }
 }
 
@@ -46,6 +55,36 @@ void MstKruskal::edge_add(const Edge& edge)
     mst_edges.push_back(edge);
     vertex_connected[edge.start_get()] = true;
     vertex_connected[edge.end_get()] = true;
+    mst_cost += edge.cost_get();
+}
+
+// -----------------------------------------------------------------------------
+/// \brief  Concatenate two trees into the first one, and discard the second.
+// -----------------------------------------------------------------------------
+void MstKruskal::trees_merge(unsigned index_a, unsigned index_b)
+{
+    trees[index_a].reserve(trees[index_a].size() + trees[index_b].size());
+    trees[index_a].insert(trees[index_a].end(),
+                          trees[index_b].begin(), trees[index_b].end());
+    trees.erase(trees.begin() + index_b);
+    cout << "  new tree " << index_a  << ": ";
+    for (auto i: trees[index_a]) {
+        cout << i << ", ";
+    }
+    cout << endl;
+}
+
+int MstKruskal::containing_tree_get(int vertex)
+{
+    for (unsigned i = 0; i < trees.size(); ++i) {
+        for (auto it = trees[i].begin(); it != trees[i].end(); ++it) {
+            if (*it == vertex) {
+                return i;
+            }
+        }
+    }
+    cerr << "Vertex " << vertex << "not found in any tree." << endl;
+    return 0;
 }
 
 //  ----------------------------------------------------------------------------
@@ -61,16 +100,21 @@ cost_t MstKruskal::mst_calculate()
 
     while (!mst_done_check()) {
         Edge edge = edge_queue.pop_top();
-        if (!vertex_connected[edge.start_get()]
-            || !vertex_connected[edge.end_get()]
-            ) {
+        cout << "Edge: " << edge.start_get() << ", " << edge.end_get() << endl;
+
+        int tree_index_start = containing_tree_get(edge.start_get());
+        int tree_index_end = containing_tree_get(edge.end_get());
+
+        if (tree_index_start != tree_index_end) {
+            cout << "yes" << endl;
+            trees_merge(tree_index_start, tree_index_end);
             // Add the edge to the solution only if not creating a loop, that is
-            // only if not both vertices are already connected.
+            // only if not both vertices are already in the same tree.
             edge_add(edge);
-        }
+        } else { cout << "no" << endl;}
     }
 
-    if (edge_queue.size() == 0) {
+    if (trees.size() > 1) {
         // The graph is not connected.
         mst_cost = COST_MAX;
         mst_edges.resize(0);

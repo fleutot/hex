@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -Werror -O3 -std=c++11
+CFLAGS = -Wall -Werror -O3 -std=c++11 -ggdb
 
 SRC = ../mst_kruskal.cpp ../graph.cpp kruskal_test.cpp
 OBJ = $(SRC:.cpp=.o)

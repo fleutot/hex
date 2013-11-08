@@ -12,10 +12,8 @@ MstKruskal class implementation
 
 class MstKruskal {
 public:
-    MstKruskal(const Graph& graph): graph(graph) {
-        // Init the vertex connection table as nothing connected.
-        vertex_connected.resize(graph.nb_vertices_get(), false);
-    }
+    MstKruskal(const Graph& graph);
+
     cost_t mst_calculate(); // returns COST_MAX if the graph was not connected.
     const std::vector<Edge>& mst_edge_list_get();
     cost_t mst_cost_get();  // returns COST_MAX if the graph was not connected.
@@ -31,8 +29,12 @@ private:
 
     const Graph& graph;
 
+    vector< vector<int> > trees;
+
     void edge_queue_populate();
     void edge_add(const Edge& edge);
+    void trees_merge(unsigned index_a, unsigned index_b);
+    int containing_tree_get(int vertex);
     bool mst_done_check();
 };
 
