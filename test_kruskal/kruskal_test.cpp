@@ -16,10 +16,12 @@ using namespace std;
 // Function prototypes
 //******************************************************************************
 static void test_kruskal_constructor(void);
+static void test_kruskal_calculate(void);
 
 int main(void)
 {
     test_kruskal_constructor();
+    test_kruskal_calculate();
     return 0;
 }
 
@@ -27,5 +29,14 @@ static void test_kruskal_constructor()
 {
     cout << __func__ << endl;
     Graph graph("data.txt");
-    cout << graph;
+    volatile MstKruskal algo(graph);
+}
+
+static void test_kruskal_calculate()
+{
+    cout << __func__ << endl;
+    Graph graph("data.txt");
+    MstKruskal algo(graph);
+    cost_t mst_cost = algo.mst_calculate();
+    cout << mst_cost << endl;
 }
