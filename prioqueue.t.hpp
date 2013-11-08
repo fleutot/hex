@@ -69,8 +69,7 @@ void Prioqueue<T>::remove(const T& data)
         // id was found in the list.
         queue.erase(it);
     } else {
-        cerr << __func__ << ": node to remove not found!" << endl;
-        exit(1);
+        // cerr << __func__ << ": node to remove not found!" << endl;
     }
 }
 

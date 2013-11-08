@@ -39,15 +39,22 @@ int main(void)
 static void test_prioqueue_add()
 {
     cout << __func__ << endl;
-    Prioqueue queue;
-    queue.add(2, 1);
-    queue.add(3, 4);
-    queue.add(4, 3);
-    queue.add(5, 2);
+    int a = 2;
+    int b = 3;
+    int c = 4;
+    int d = 5;
+    int e = 2;
+
+    Prioqueue<int> queue;
+    // adds references, need a variable.
+    queue.add(a, 1);
+    queue.add(b, 4);
+    queue.add(c, 3);
+    queue.add(d, 2);
 
     assert(queue.size() == 4);
 
-    queue.add(2, 2);    // Id exists already, replace prio.
+    queue.add(e, 2);    // Id exists already, replace prio.
 
     assert(queue.size() == 4);
 }
@@ -56,11 +63,17 @@ static void test_prioqueue_remove()
 {
     cout << __func__ << endl;
 
-    Prioqueue queue;
-    queue.add(2, 1);
-    queue.add(3, 4);
-    queue.add(4, 3);
-    queue.add(5, 2);
+    int a = 2;
+    int b = 3;
+    int c = 4;
+    int d = 5;
+
+    Prioqueue<int> queue;
+    // adds references, need a variable.
+    queue.add(a, 1);
+    queue.add(b, 4);
+    queue.add(c, 3);
+    queue.add(d, 2);
 
     queue.remove(6);    // Id not in list.
     assert(queue.size() == 4);
@@ -73,11 +86,17 @@ static void test_prioqueue_top()
 {
     cout << __func__ << endl;
 
-    Prioqueue queue;
-    queue.add(2, 1);
-    queue.add(3, 4);
-    queue.add(4, 3);
-    queue.add(5, 2);
+    int a = 2;
+    int b = 3;
+    int c = 4;
+    int d = 5;
+
+    Prioqueue<int> queue;
+    // adds references, need a variable.
+    queue.add(a, 1);
+    queue.add(b, 4);
+    queue.add(c, 3);
+    queue.add(d, 2);
 
     int id_in_order[] = {2, 5, 4, 3};
 
@@ -93,11 +112,17 @@ static void test_prioqueue_pop_top()
 {
     cout << __func__ << endl;
 
-    Prioqueue queue;
-    queue.add(2, 1);
-    queue.add(3, 4);
-    queue.add(4, 3);
-    queue.add(5, 2);
+    int a = 2;
+    int b = 3;
+    int c = 4;
+    int d = 5;
+
+    Prioqueue<int> queue;
+    // adds references, need a variable.
+    queue.add(a, 1);
+    queue.add(b, 4);
+    queue.add(c, 3);
+    queue.add(d, 2);
 
     int id_in_order[] = {2, 5, 4, 3};
 
@@ -112,11 +137,17 @@ static void test_prioqueue_prio_set()
 {
     cout << __func__ << endl;
 
-    Prioqueue queue;
-    queue.add(2, 2);
-    queue.add(3, 4);
-    queue.add(4, 3);
-    queue.add(5, 5);
+    int a = 2;
+    int b = 3;
+    int c = 4;
+    int d = 5;
+
+    Prioqueue<int> queue;
+    // adds references, need a variable.
+    queue.add(a, 1);
+    queue.add(b, 4);
+    queue.add(c, 3);
+    queue.add(d, 2);
 
     queue.prio_set(5, 1);
 

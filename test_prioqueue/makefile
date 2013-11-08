@@ -1,7 +1,7 @@
 CC = g++
-CFLAGS = -Wall -Werror -O3
+CFLAGS = -Wall -Werror -O3 -std=c++11
 
-SRC = ../prioqueue.cpp prioqueue_test.cpp
+SRC = prioqueue_test.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = prioqueue_test
 
