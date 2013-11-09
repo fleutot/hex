@@ -120,6 +120,11 @@ bool operator!=(const Edge& a, const Edge& b)
     return ((a.start_get() != b.start_get()) || (a.end_get() != b.end_get()));
 }
 
+ostream& operator<<(ostream& os, const Edge& e)
+{
+    os << "(" << e.start << ", " << e.end << ")";
+    return os;
+}
 
 //  ----------------------------------------------------------------------------
 /// \brief  Graph constructor
@@ -269,9 +274,9 @@ void Graph::edge_add(int start, int end, const cost_t cost)
     // Check first that the edge does not exist already, even if it has a
     // different cost.
     if (edge_exists(start, end)) {
-        cout << __func__ << ": attempting to create an edge that already "
-             << "exists: " << start << " to " << end << ", cost " << cost
-             << endl;
+        //cerr << __func__ << ": attempting to create an edge that already "
+        //     << "exists: " << start << " to " << end << ", cost " << cost
+        //     << endl;
         return;
     }
 

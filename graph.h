@@ -21,6 +21,7 @@ public:
     int end_get(void) const;
     cost_t cost_get(void) const;
     void cost_set(const cost_t cost);
+    friend std::ostream& operator<<(std::ostream& os, const Edge& e);
 
 private:
     int start;
@@ -31,7 +32,7 @@ private:
 // These operators only check the vertices that the edges connect, not the cost.
 bool operator==(const Edge& a, const Edge& b);
 bool operator!=(const Edge& a, const Edge& b);
-
+std::ostream& operator<<(std::ostream& os, const Edge& e);
 
 class Graph {
 public:

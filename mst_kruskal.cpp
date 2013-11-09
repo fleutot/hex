@@ -1,5 +1,7 @@
 /*------------------------------------------------------------------------------
 MstKruskal class implementation
+As per the wikipedia article:
+http://en.wikipedia.org/wiki/Kruskal%27s_algorithm
 ------------------------------------------------------------------------------*/
 
 #include <vector>
@@ -11,6 +13,10 @@ MstKruskal class implementation
 
 using namespace std;
 
+//  ----------------------------------------------------------------------------
+/// \brief  Constructor. Initialize data internal to the algorithm.
+/// \param  Graph to run the Kruskal algorithm on.
+//  ----------------------------------------------------------------------------
 MstKruskal::MstKruskal(const Graph& graph): mst_cost(0), graph(graph)
 {
     // Init the vertex connection table as nothing connected.
@@ -67,11 +73,6 @@ void MstKruskal::trees_merge(unsigned index_a, unsigned index_b)
     trees[index_a].insert(trees[index_a].end(),
                           trees[index_b].begin(), trees[index_b].end());
     trees.erase(trees.begin() + index_b);
-    cout << "  new tree " << index_a  << ": ";
-    for (auto i: trees[index_a]) {
-        cout << i << ", ";
-    }
-    cout << endl;
 }
 
 int MstKruskal::containing_tree_get(int vertex)
@@ -100,18 +101,16 @@ cost_t MstKruskal::mst_calculate()
 
     while (!mst_done_check()) {
         Edge edge = edge_queue.pop_top();
-        cout << "Edge: " << edge.start_get() << ", " << edge.end_get() << endl;
 
         int tree_index_start = containing_tree_get(edge.start_get());
         int tree_index_end = containing_tree_get(edge.end_get());
 
         if (tree_index_start != tree_index_end) {
-            cout << "yes" << endl;
             trees_merge(tree_index_start, tree_index_end);
             // Add the edge to the solution only if not creating a loop, that is
             // only if not both vertices are already in the same tree.
             edge_add(edge);
-        } else { cout << "no" << endl;}
+        }
     }
 
     if (trees.size() > 1) {
