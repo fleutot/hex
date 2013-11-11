@@ -7,7 +7,7 @@ Graph class implementation
 #include <cstdlib>
 #include <vector>
 
-#include "graph.h"
+#include "graph.hpp"
 
 using namespace std;
 

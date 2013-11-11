@@ -7,8 +7,8 @@ ShortestPathAlgo class implementation
 
 #include <vector>
 
-#include "graph.h"
-#include "prioqueue.h"
+#include "graph.hpp"
+#include "prioqueue.hpp"
 
 class ShortestPathAlgo {
 public:

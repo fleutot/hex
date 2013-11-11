@@ -6,10 +6,10 @@ http://en.wikipedia.org/wiki/Kruskal%27s_algorithm
 
 #include <vector>
 
-#include "graph.h"
-#include "prioqueue.h"
+#include "graph.hpp"
+#include "prioqueue.hpp"
 
-#include "mst_kruskal.h"
+#include "mst_kruskal.hpp"
 
 using namespace std;
 

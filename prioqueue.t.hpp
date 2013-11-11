@@ -3,7 +3,7 @@ Prioqueue class implementation
 This needs to be in a hpp file because it implements a template, and client
 modules need to know the functions definitions at compile time.
 ----------------------------------------------------------------------------*/
-#include "prioqueue.h"
+#include "prioqueue.hpp"
 
 #include <iostream>
 #include <vector>

@@ -6,8 +6,8 @@ parameter.
 #include <iostream>
 #include <vector>
 
-#include "graph.h"
-#include "mst_kruskal.h"
+#include "graph.hpp"
+#include "mst_kruskal.hpp"
 
 using namespace std;
 

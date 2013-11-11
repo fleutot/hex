@@ -3,12 +3,12 @@ ShortestPathAlgo class implementation
 Dijkstra's shortest path algorithm, as per the Wikipedia page:
 /// http://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 ----------------------------------------------------------------------------*/
-#include "shortestpathalgo.h"
+#include "shortestpathalgo.hpp"
 
 #include <limits.h>
 
-#include "graph.h"
-#include "prioqueue.h"
+#include "graph.hpp"
+#include "prioqueue.hpp"
 
 using namespace std;
 

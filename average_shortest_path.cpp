@@ -9,8 +9,8 @@ Do that for several densities.
 #include <iostream>
 #include <vector>
 
-#include "graph.h"
-#include "shortestpathalgo.h"
+#include "graph.hpp"
+#include "shortestpathalgo.hpp"
 
 using namespace std;
 
