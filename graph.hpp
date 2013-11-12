@@ -12,21 +12,27 @@ Graph class implementation
 typedef double cost_t;
 extern const cost_t COST_MAX;
 
+//------------------------------------------------------------------------------
 class Edge {
 public:
-    Edge(int start = 0, int end = 0, cost_t cost = 0);
-    Edge(int start, int end);
+    Edge(int start, int end, cost_t cost = 1, short type = 0);
     ~Edge();
     int start_get(void) const;
     int end_get(void) const;
+
     cost_t cost_get(void) const;
     void cost_set(const cost_t cost);
+
+    void type_set(const short t) { type = t; }
+    short type_get() const { return type; }
+
     friend std::ostream& operator<<(std::ostream& os, const Edge& e);
 
 private:
     int start;
     int end;
     cost_t cost;
+    short type;
 };
 
 // These operators only check the vertices that the edges connect, not the cost.
@@ -34,6 +40,8 @@ bool operator==(const Edge& a, const Edge& b);
 bool operator!=(const Edge& a, const Edge& b);
 std::ostream& operator<<(std::ostream& os, const Edge& e);
 
+
+//------------------------------------------------------------------------------
 class Graph {
 public:
     Graph(const int nb_vertices);
@@ -45,23 +53,21 @@ public:
 
     void print(void);   // Use rather operator<< to display graphes.
 
-    inline unsigned nb_vertices_get(void) const {
-        return nb_vertices;
-    }
-    inline unsigned nb_edges_get(void) const {
-        return edge_list.size();
-    }
+    unsigned nb_vertices_get(void) const { return nb_vertices; }
+    unsigned nb_edges_get(void) const { return edge_list.size(); }
 
-    cost_t edge_cost_get(int start, int end) const;
     bool adjacent_check(const int node_a, const int node_b) const;
 
-    bool edge_exists(int start, int end, int& index) const;
-    bool edge_exists(int start, int end) const;
 
     const std::vector<Edge>& edge_list_get() const;
 
+    bool edge_exists(int start, int end, int& index) const;
+    bool edge_exists(int start, int end) const;
     void edge_add(int start, int end, const cost_t cost);
     void edge_cost_set(int start, int end, const cost_t cost);
+    cost_t edge_cost_get(int start, int end) const;
+    void edge_type_set(int start, int end, const short type);
+    short edge_type_get(int start, int end) const;
 
     std::vector<Edge> all_possible_edges_generate(void) const;
     std::vector<int> neighbors_get(const int node) const;

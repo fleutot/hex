@@ -66,10 +66,10 @@ static cost_t random_cost_calculate(const cost_t min_cost,
 //  ----------------------------------------------------------------------------
 /// Class Edge
 //  ----------------------------------------------------------------------------
-Edge::Edge(int start, int end, cost_t cost)
+Edge::Edge(int start, int end, cost_t cost, short type)
 {
     if (start == end) {
-        cout << "Created an edge with same start and end! (" << start
+        cerr << "Created an edge with same start and end! (" << start
              << ")" << endl;
     } else if (start > end) {
         // Edges are undirected, have always start < end as a convention.
@@ -81,6 +81,7 @@ Edge::Edge(int start, int end, cost_t cost)
         this->end = end;
     }
     this->cost = cost;
+    this->type = type;
 }
 
 Edge::~Edge()
@@ -122,7 +123,8 @@ bool operator!=(const Edge& a, const Edge& b)
 
 ostream& operator<<(ostream& os, const Edge& e)
 {
-    os << "(" << e.start << ", " << e.end << ")";
+    os << "(" << e.start << ", " << e.end << "): cost "
+       << e.cost << ", type " << e.type;
     return os;
 }
 
@@ -323,6 +325,33 @@ cost_t Graph::edge_cost_get(int start, int end) const
         cost = edge_list[found_index].cost_get();
     }
     return cost;
+}
+
+void Graph::edge_type_set(int start, int end, const short type)
+{
+    reorder_values(start, end);
+    int found_index = 0;
+    bool found = edge_exists(start, end, found_index);
+    if (found) {
+        edge_list[found_index].type_set(type);
+    } else {
+        cout << __func__ << ": type_set must have an existing edge." << endl;
+    }
+}
+
+short Graph::edge_type_get(int start, int end) const
+{
+    short type = 0;
+
+    reorder_values(start, end);
+    int found_index = 0;
+    bool found = edge_exists(start, end, found_index);
+    if (found) {
+        type = edge_list[found_index].type_get();
+    } else {
+        cerr << __func__ << ": edge not found" << endl;
+    }
+    return type;
 }
 
 bool Graph::adjacent_check(int node_a, int node_b) const

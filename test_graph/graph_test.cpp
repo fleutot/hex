@@ -3,7 +3,7 @@ Copyright (c) 2013 Gauthier Östervall
 ----------------------------------------------------------------------------*/
 
 // Module under test
-#include "../graph.h"
+#include "../graph.hpp"
 
 #include <cassert>
 #include <cstdlib>
@@ -24,6 +24,7 @@ void test_graph_edge_add(void);
 void test_graph_neighbors_get(void);
 void test_graph_edge_exists(void);
 void test_graph_all_possible_edges_generate(void);
+void test_graph_type(void);
 
 int main(void)
 {
@@ -37,6 +38,7 @@ int main(void)
     test_graph_neighbors_get();
     test_graph_edge_exists();
     test_graph_all_possible_edges_generate();
+    test_graph_type();
     return 0;
 }
 
@@ -98,8 +100,6 @@ void test_graph_edge_add(void)
     graph.edge_add(1, 2, 2.0);
     graph.edge_add(1, 3, 2.0);
     graph.edge_add(2, 3, 2.0);
-    cout << "Expected warning for adding an edge that already exists:" << endl;
-    cout << "    ";
     graph.edge_add(1, 3, 3.0); // Edge exists already, not added.
 
     assert(graph.nb_edges_get() == 3);
@@ -163,4 +163,13 @@ void test_graph_all_possible_edges_generate(void)
             }
         }
     }
+}
+
+void test_graph_type(void)
+{
+    cout << __func__ << endl;
+    Graph graph("data.txt");
+    graph.edge_type_set(0, 2, 10);
+    assert(graph.edge_type_get(2, 0) == 10);
+    assert(graph.edge_type_get(1, 0) == 0);
 }
