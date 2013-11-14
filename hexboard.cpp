@@ -18,7 +18,11 @@ static const char player2char[] = {
     [Player::X]     = 'X'
 };
 
-HexBoard::HexBoard(unsigned size): size(size), board(size * size)
+// 4 extra virtual nodes for the board, representing the edges. These were added
+// to ease checking for winning condition.
+HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
+                                   west(size * size), east(size * size + 1),
+                                   north(size * size + 2), south(size * size +3)
 {
     occupied_map.resize(size);
     for (auto it = occupied_map.begin(); it != occupied_map.end(); ++it) {
@@ -64,6 +68,23 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size)
             board.edge_add(vertix, vertix_7oclock);
         }
     }
+
+    // Virtual nodes connect to all the nodes of their board side.
+    for (unsigned i = 0; i < size; ++i) {
+        board.edge_add(west, coord2lin(size - 1, i));
+        board.edge_add(east, coord2lin(0, i));
+        board.edge_add(north, coord2lin(i, 0));
+        board.edge_add(south, coord2lin(i, size - 1));
+    }
+
+    // Add virtual nodes to the players' trees.
+    trees_X.resize(2);
+    trees_X[0].push_back(north);
+    trees_X[1].push_back(south);
+
+    trees_O.resize(2);
+    trees_O[0].push_back(west);
+    trees_O[1].push_back(east);
 }
     
 HexBoard::~HexBoard()
@@ -75,46 +96,52 @@ HexBoard::~HexBoard()
 
 bool HexBoard::sanity_check()
 {
-    return (board.nb_vertices_get() == (size * size)
-            && board.nb_edges_get() == (3 * size * (size - 1) - (size - 1))
+    return (board.nb_vertices_get() == (size * size + 4)
+            && board.nb_edges_get() == (
+                (3 * size * (size - 1) - (size - 1))    // real board edges
+                + (4 * size))    // edges to virtual nodes.
             && occupied_map.size() == size
             && occupied_map[0].size() == size
             && occupied_map[size - 1].size() == size
-        );
+            );
 }
 
 bool HexBoard::play(unsigned col, unsigned row, Player player)
 {
     if ((col > size - 1)
         || (row > size - 1)
-        || (occupied_map[col][row] != Player::NONE)
+        || (occupied_map[row][col] != Player::NONE) // vector of rows.
         ) {
         cout << "Unauthorized move." << endl;
         return false;
     }
 
-    player_select(player);
-
     // order of row and col here inverted, occupied_map is a vector of rows.
     occupied_map[row][col] = player;
-    update_trees(col, row, player);
-    return true;
+
+    player_select(player);
+    unsigned new_tree_index = update_trees(col, row, player);
+    return connected_in_tree_check(side_a, side_b, new_tree_index);
 }
 
 void HexBoard::player_select(const Player player)
 {
     if (player == Player::O) {
         trees = &trees_O;
+        side_a = east;
+        side_b = west;
     } else if (player == Player::X) {
         trees = &trees_X;
+        side_a = north;
+        side_b = south;
     } else {
         cerr << __func__ << ": undefined player." << endl;
         exit(1);
     }
 }
 
-void HexBoard::update_trees(const unsigned col, const unsigned row,
-                            const Player player)
+unsigned HexBoard::update_trees(const unsigned col, const unsigned row,
+                                const Player player)
 {
     unsigned vertex_name = coord2lin(col, row);
 
@@ -135,6 +162,7 @@ void HexBoard::update_trees(const unsigned col, const unsigned row,
             new_tree_index = neighbor_tree_index;
         }
     }
+    return new_tree_index;
 }
 
 bool HexBoard::containing_tree_get(const int vertex_name, unsigned& found_tree_index)
@@ -162,6 +190,21 @@ void HexBoard::trees_merge(unsigned index_a, unsigned index_b)
     forest[index_a].insert(forest[index_a].end(),
                            forest[index_b].begin(), forest[index_b].end());
     forest.erase(forest.begin() + index_b);
+}
+
+bool HexBoard::connected_in_tree_check(const int node_a, const int node_b,
+                                       const unsigned tree_index)
+{
+    bool a_found = false;
+    bool b_found = false;
+    for (auto vertex: (*trees)[tree_index]) {
+        if (node_a == vertex) {
+            a_found = true;
+        } else if (node_b == vertex) {
+            b_found = true;
+        }
+    }
+    return a_found && b_found;
 }
 
 ostream& operator<< (ostream& os, HexBoard& board)
