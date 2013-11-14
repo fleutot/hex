@@ -62,7 +62,7 @@ private:
     // If there is one, find the index of the tree in the given forest, which
     // contains the vertex passed as first parameter.
     // Return false if no tree was found, true otherwise.
-    bool containing_tree_get(const int vertex_name, int& found_tree_index);
+    bool containing_tree_get(const int vertex_name, unsigned& found_tree_index);
 
     void trees_merge(unsigned index_a, unsigned index_b);
 };

@@ -126,7 +126,7 @@ void HexBoard::update_trees(const unsigned col, const unsigned row,
     // Check if neighbors are already trees, and merge in that case.
     vector<int> neighbors = board.neighbors_get(vertex_name);
     for (auto vertex_name: neighbors) {
-        int neighbor_tree_index;
+        unsigned neighbor_tree_index;
         if (containing_tree_get(vertex_name, neighbor_tree_index)) {
             trees_merge(neighbor_tree_index, new_tree_index);
             // The tree that was earlier created with only one vertex does not
@@ -137,7 +137,7 @@ void HexBoard::update_trees(const unsigned col, const unsigned row,
     }
 }
 
-bool HexBoard::containing_tree_get(const int vertex_name, int& found_tree_index)
+bool HexBoard::containing_tree_get(const int vertex_name, unsigned& found_tree_index)
 {
     for (unsigned i = 0; i < trees->size(); ++i) {
         for (auto test_vertex: (*trees)[i]) {
@@ -152,6 +152,10 @@ bool HexBoard::containing_tree_get(const int vertex_name, int& found_tree_index)
 
 void HexBoard::trees_merge(unsigned index_a, unsigned index_b)
 {
+    if (index_a == index_b) {
+        return;
+    }
+
     vector< vector<int> >& forest = *trees;  // for readability.
 
     forest[index_a].reserve(forest[index_a].size() + forest[index_b].size());
