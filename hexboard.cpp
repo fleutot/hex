@@ -66,12 +66,11 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size)
     }
 }
     
-
 HexBoard::~HexBoard()
 {
     // do nothing. The build process wanted a definition here, rather than an
-    // empty one in the class implementation. It would be interesting to know
-    // why, but there is no time now.
+    // empty one in the class implementation, or implicit definition.  It would
+    // be interesting to know why, but there is no time now.
 }
 
 bool HexBoard::sanity_check()
@@ -86,7 +85,79 @@ bool HexBoard::sanity_check()
 
 bool HexBoard::play(unsigned col, unsigned row, Player player)
 {
+    if ((col > size - 1)
+        || (row > size - 1)
+        || (occupied_map[col][row] != Player::NONE)
+        ) {
+        cout << "Unauthorized move." << endl;
+        return false;
+    }
+
+    player_select(player);
+
+    // order of row and col here inverted, occupied_map is a vector of rows.
+    occupied_map[row][col] = player;
+    update_trees(col, row, player);
+    return true;
+}
+
+void HexBoard::player_select(const Player player)
+{
+    if (player == Player::O) {
+        trees = &trees_O;
+    } else if (player == Player::X) {
+        trees = &trees_X;
+    } else {
+        cerr << __func__ << ": undefined player." << endl;
+        exit(1);
+    }
+}
+
+void HexBoard::update_trees(const unsigned col, const unsigned row,
+                            const Player player)
+{
+    unsigned vertex_name = coord2lin(col, row);
+
+    // Add the node as a new tree.
+    unsigned new_tree_index = trees->size();
+    trees->resize(new_tree_index + 1);
+    (*trees)[new_tree_index].push_back(vertex_name);
+
+    // Check if neighbors are already trees, and merge in that case.
+    vector<int> neighbors = board.neighbors_get(vertex_name);
+    for (auto vertex_name: neighbors) {
+        int neighbor_tree_index;
+        if (containing_tree_get(vertex_name, neighbor_tree_index)) {
+            trees_merge(neighbor_tree_index, new_tree_index);
+            // The tree that was earlier created with only one vertex does not
+            // exist anymore, it has been merged with adjacent_tree.
+            // Further merges must happen with the old but updated tree.
+            new_tree_index = neighbor_tree_index;
+        }
+    }
+}
+
+bool HexBoard::containing_tree_get(const int vertex_name, int& found_tree_index)
+{
+    for (unsigned i = 0; i < trees->size(); ++i) {
+        for (auto test_vertex: (*trees)[i]) {
+            if (test_vertex == vertex_name) {
+                found_tree_index = i;
+                return true;
+            }
+        }
+    }
     return false;
+}
+
+void HexBoard::trees_merge(unsigned index_a, unsigned index_b)
+{
+    vector< vector<int> >& forest = *trees;  // for readability.
+
+    forest[index_a].reserve(forest[index_a].size() + forest[index_b].size());
+    forest[index_a].insert(forest[index_a].end(),
+                           forest[index_b].begin(), forest[index_b].end());
+    forest.erase(forest.begin() + index_b);
 }
 
 ostream& operator<< (ostream& os, HexBoard& board)
