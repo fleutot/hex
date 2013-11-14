@@ -19,13 +19,13 @@ enum class Player: int {
 
 class HexBoard {
 public:
-    HexBoard(int size);
+    HexBoard(unsigned size);
     ~HexBoard();
 
     // Play a move, returns true if the move wins the game.
     bool play(unsigned col, unsigned row, Player player);
 
-    // Implemented for automated test purposes.
+    // Implemented for automated test purposes (see unit tests).
     bool sanity_check();
 
     friend ostream& operator<< (ostream& os, HexBoard& h);
@@ -34,6 +34,10 @@ private:
     unsigned size;
     Graph board;
     vector< vector<Player> > occupied_map;
+
+    unsigned coord2lin(unsigned col, unsigned row) {
+        return row * size + col;
+    }
 
 };
 

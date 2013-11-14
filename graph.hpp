@@ -63,7 +63,7 @@ public:
 
     bool edge_exists(int start, int end, int& index) const;
     bool edge_exists(int start, int end) const;
-    void edge_add(int start, int end, const cost_t cost);
+    void edge_add(int start, int end, const cost_t cost = 1);
     void edge_cost_set(int start, int end, const cost_t cost);
     cost_t edge_cost_get(int start, int end) const;
     void edge_type_set(int start, int end, const short type);
