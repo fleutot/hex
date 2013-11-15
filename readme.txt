@@ -5,3 +5,7 @@ Minimimum spanning tree:
 Average shortest path:
 - build with "make asp"
 - run with "./average_shortest_path
+
+Hex game human vs human"
+- build with "make hex"
+- run with "./hex_h2h n", with n the board size.

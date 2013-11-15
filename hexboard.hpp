@@ -10,6 +10,7 @@ Implementation of a hex board
 using namespace std;
 
 extern const int nb_players;
+extern const char player2char[];
 
 enum class Player: int {
     NONE,
@@ -32,7 +33,16 @@ public:
         return trees->size();
     }
 
-    friend ostream& operator<< (ostream& os, HexBoard& h);
+    unsigned size_get() const {
+        return size;
+    }
+
+    bool occupied_check(const unsigned col, const unsigned row) const {
+        // map is a vector of rows.
+        return occupied_map[row][col] != Player::NONE;
+    }
+
+    friend ostream& operator<< (ostream& os, const HexBoard& h);
 
 private:
     unsigned size;
@@ -78,13 +88,13 @@ private:
 
     // Merge two trees into one, if not the same. Three B is destroyed after
     // having been merged into A.
-    void trees_merge(unsigned index_a, unsigned index_b);
+    void trees_merge(unsigned& index_a, unsigned index_b);
 
     // Check if two nodes are connected in the tree passed as parameter.
     bool connected_in_tree_check(const int node_a, const int node_b,
                                  const unsigned tree_index);
 };
 
-ostream& operator<< (ostream& os, HexBoard& h);
+ostream& operator<< (ostream& os, const HexBoard& h);
 
 #endif // HEXBOARD_HPP_INCLUDED

@@ -12,7 +12,7 @@ using namespace std;
 
 const int nb_players = 2;
 
-static const char player2char[] = {
+const char player2char[] = {
     [Player::NONE]  = '.',
     [Player::O]     = 'O',
     [Player::X]     = 'X'
@@ -71,8 +71,8 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
 
     // Virtual nodes connect to all the nodes of their board side.
     for (unsigned i = 0; i < size; ++i) {
-        board.edge_add(west, coord2lin(size - 1, i));
-        board.edge_add(east, coord2lin(0, i));
+        board.edge_add(west, coord2lin(0, i));
+        board.edge_add(east, coord2lin(size - 1, i));
         board.edge_add(north, coord2lin(i, 0));
         board.edge_add(south, coord2lin(i, size - 1));
     }
@@ -178,7 +178,7 @@ bool HexBoard::containing_tree_get(const int vertex_name, unsigned& found_tree_i
     return false;
 }
 
-void HexBoard::trees_merge(unsigned index_a, unsigned index_b)
+void HexBoard::trees_merge(unsigned& index_a, unsigned index_b)
 {
     if (index_a == index_b) {
         return;
@@ -189,7 +189,12 @@ void HexBoard::trees_merge(unsigned index_a, unsigned index_b)
     forest[index_a].reserve(forest[index_a].size() + forest[index_b].size());
     forest[index_a].insert(forest[index_a].end(),
                            forest[index_b].begin(), forest[index_b].end());
+
     forest.erase(forest.begin() + index_b);
+    if (index_a > index_b) {
+        // A tree before index_a was erased, update the index.
+        --index_a;
+    }
 }
 
 bool HexBoard::connected_in_tree_check(const int node_a, const int node_b,
@@ -207,7 +212,7 @@ bool HexBoard::connected_in_tree_check(const int node_a, const int node_b,
     return a_found && b_found;
 }
 
-ostream& operator<< (ostream& os, HexBoard& board)
+ostream& operator<< (ostream& os, const HexBoard& board)
 {
     const int slot_width = 4;
 

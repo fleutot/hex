@@ -19,6 +19,8 @@ void test_hexboard_constructor(void);
 void test_hexboard_display(void);
 void test_hexboard_play(void);
 void test_hexboard_win_1(void);
+void test_hexboard_win_2(void);
+void test_hexboard_win_3(void);
 
 int main(void)
 {
@@ -26,6 +28,8 @@ int main(void)
     test_hexboard_display();
     test_hexboard_play();
     test_hexboard_win_1();
+    test_hexboard_win_2();
+    test_hexboard_win_3();
     cout << "All tested passed (but user check needed!)." << endl;
     return 0;
 }
@@ -84,16 +88,65 @@ void test_hexboard_win_1(void)
     HexBoard board(3);
 
     win = board.play(1, 1, Player::X);
+cout << board << endl;
+    assert(!win);
+    win = board.play(0, 0, Player::O);
+cout << board << endl;
+    assert(!win);
+    win = board.play(1, 2, Player::X);
+cout << board << endl;
+    assert(!win);
+    win = board.play(2, 0, Player::O);
+cout << board << endl;
+    assert(!win);
+    win = board.play(2, 2, Player::X);
+cout << board << endl;
+    assert(!win);
+    win = board.play(1, 0, Player::O);
+    assert(win);
+    cout << board << endl;
+}
+
+void test_hexboard_win_2(void)
+{
+    cout << __func__ << endl;
+
+    bool win = false;
+    HexBoard board(3);
+
+    win = board.play(1, 1, Player::X);
     assert(!win);
     win = board.play(0, 0, Player::O);
     assert(!win);
     win = board.play(1, 2, Player::X);
     assert(!win);
-    win = board.play(2, 0, Player::O);
+    win = board.play(0, 1, Player::O);
     assert(!win);
-    win = board.play(2, 2, Player::X);
+    win = board.play(1, 0, Player::X);
+    assert(win);
+    win = board.play(0, 2, Player::O);
     assert(!win);
-    win = board.play(1, 0, Player::O);
+    cout << board << endl;
+}
+
+void test_hexboard_win_3(void)
+{
+    cout << __func__ << endl;
+
+    bool win = false;
+    HexBoard board(2);
+
+    win = board.play(0, 0, Player::O);
+cout << board << endl;
+    assert(!win);
+    win = board.play(1, 0, Player::X);
+cout << board << endl;
+    assert(!win);
+    win = board.play(0, 1, Player::O);
+cout << board << endl;
+    assert(!win);
+    win = board.play(1, 1, Player::X);
+cout << board << endl;
     assert(win);
     cout << board << endl;
 }
