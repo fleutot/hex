@@ -69,7 +69,6 @@ private:
     // depending on the current player.
     void player_select(const Player player);
 
-
     // Convert a column and row pair to a linear index, which is used as a node
     // name in the graph.
     unsigned coord2lin(unsigned col, unsigned row) {

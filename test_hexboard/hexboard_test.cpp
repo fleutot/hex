@@ -88,19 +88,14 @@ void test_hexboard_win_1(void)
     HexBoard board(3);
 
     win = board.play(1, 1, Player::X);
-cout << board << endl;
     assert(!win);
     win = board.play(0, 0, Player::O);
-cout << board << endl;
     assert(!win);
     win = board.play(1, 2, Player::X);
-cout << board << endl;
     assert(!win);
     win = board.play(2, 0, Player::O);
-cout << board << endl;
     assert(!win);
     win = board.play(2, 2, Player::X);
-cout << board << endl;
     assert(!win);
     win = board.play(1, 0, Player::O);
     assert(win);
@@ -126,7 +121,6 @@ void test_hexboard_win_2(void)
     assert(win);
     win = board.play(0, 2, Player::O);
     assert(!win);
-    cout << board << endl;
 }
 
 void test_hexboard_win_3(void)
@@ -137,16 +131,11 @@ void test_hexboard_win_3(void)
     HexBoard board(2);
 
     win = board.play(0, 0, Player::O);
-cout << board << endl;
     assert(!win);
     win = board.play(1, 0, Player::X);
-cout << board << endl;
     assert(!win);
     win = board.play(0, 1, Player::O);
-cout << board << endl;
     assert(!win);
     win = board.play(1, 1, Player::X);
-cout << board << endl;
     assert(win);
-    cout << board << endl;
 }
