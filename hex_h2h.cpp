@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
         if (valid_move) {
             win = hex.play(move.first, move.second, player);
             if (win) {
+                cout << hex << endl;
                 win_display(player);
             } else {
                 switch_player(player);
