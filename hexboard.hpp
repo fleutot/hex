@@ -43,6 +43,10 @@ public:
     }
 
     friend ostream& operator<< (ostream& os, const HexBoard& h);
+    // Print the intermediate row that shows links between the positions of
+    // different rows. This is meant to be used by operator<< only.
+    void slanted_links_row_print(ostream& os, const unsigned slot_width,
+                                 const unsigned row_index) const;
 
 private:
     unsigned size;

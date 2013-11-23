@@ -214,30 +214,47 @@ bool HexBoard::connected_in_tree_check(const int node_a, const int node_b,
 
 ostream& operator<< (ostream& os, const HexBoard& board)
 {
+    // Changing slot_width may need more changes for the display of the links.
     const int slot_width = 4;
 
     // column labels
-    os << setw(slot_width) << " ";
+    os << setw(slot_width / 2) << " ";
     for (unsigned i = 0; i < board.size; ++i) {
         os << setw(slot_width) << static_cast<char>(i + 'A');
     }
     os << endl;
 
     unsigned row_index = 0;
-    for (auto row: board.occupied_map) {
+    for (auto row_it = board.occupied_map.begin();
+         row_it != board.occupied_map.end();
+         ++row_it
+        ) {
         // offset to make the board slanted.
         for (unsigned i = 0; i < row_index; ++i) {
             os << setw(slot_width / 2) << " ";
         }
-        os << setw(slot_width) << ++row_index; // row label
-        for (auto slot_value: row) {
-            os << setw(slot_width) << player2char[static_cast<short>(slot_value)];
+        ++row_index;
+        os << setw(slot_width) << row_index; // row label
+
+        // The row itself.
+        for (auto col_it = row_it->begin(); col_it != row_it->end(); ++col_it) {
+            os << setw(slot_width - 2)
+               << player2char[static_cast<short>(*col_it)];
+            // Print the horizontal link after all but last column.
+            if (col_it != row_it->end() - 1) {
+                os << " -";
+            }
         }
         os << setw(slot_width) << row_index << endl; // repeat the row label
+
+        // Print the slanted links after all but last row.
+        if (row_it != board.occupied_map.end() - 1) {
+            board.slanted_links_row_print(os, slot_width, row_index);
+        }
     }
 
-    // repeat column labels. One extra half slot to align with the previous row.
-    for (unsigned i = 0; i < row_index + 1; ++i) {
+    // repeat column labels.
+    for (unsigned i = 0; i < row_index; ++i) {
         os << setw(slot_width / 2) << " ";
     }
     for (unsigned i = 0; i < board.size; ++i) {
@@ -245,4 +262,20 @@ ostream& operator<< (ostream& os, const HexBoard& board)
     }
 
     return os;
+}
+
+void HexBoard::slanted_links_row_print(ostream& os, const unsigned slot_width,
+                                       const unsigned row_index) const
+{
+    // offset to make the row of links also slanted.
+    for (unsigned i = 0; i < row_index + 1; ++i) {
+        os << setw(slot_width / 2) << " ";
+    }
+    os << " ";  // Extra space to align in a slanted fashion to the slot above.
+
+    // Minus one, the last column is a special case.
+    for (unsigned i = 0; i < size - 1; ++i) {
+        os << setw(slot_width) << " \\ /";
+    }
+    os << " \\" << endl;
 }
