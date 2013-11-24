@@ -48,7 +48,7 @@ public:
     void slanted_links_row_print(ostream& os, const unsigned slot_width,
                                  const unsigned row_index) const;
 
-private:
+protected:
     unsigned size;
     Graph board;
 
