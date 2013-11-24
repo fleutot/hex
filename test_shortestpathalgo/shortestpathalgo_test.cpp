@@ -3,8 +3,8 @@ Copyright (c) 2013 Gauthier Östervall
 ----------------------------------------------------------------------------*/
 
 // Module under test
-#include "../shortestpathalgo.h"
-#include "../graph.h"
+#include "../shortestpathalgo.hpp"
+#include "../graph.hpp"
 
 #include <cassert>
 #include <iostream>
