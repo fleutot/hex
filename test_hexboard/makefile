@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall -Werror -O3 -std=c++11
 
-SRC = ../hexboard.cpp ../graph.cpp hexboard_test.cpp
+SRC = ../hexboard.cpp ../graph.cpp ../player.cpp hexboard_test.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = hexboard_test
 

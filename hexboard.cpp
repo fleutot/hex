@@ -8,16 +8,11 @@ Implementation of a hex board
 
 #include "hexboard.hpp"
 #include "graph.hpp"
+#include "player.hpp"
 
 using namespace std;
 
 const int nb_players = 2;
-
-const char player2char[] = {
-    [Player::NONE]  = '.',
-    [Player::O]     = 'O',
-    [Player::X]     = 'X'
-};
 
 // 4 extra virtual nodes for the board, representing the edges. These were added
 // to ease checking for winning condition.
@@ -27,7 +22,7 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
 {
     occupied_map.resize(size);
     for (auto it = occupied_map.begin(); it != occupied_map.end(); ++it) {
-        it->resize(size, Player::NONE);
+        it->resize(size);   // Default value for objects Player is NONE.
     }
 
     // Create the edges of the graph. Besides special cases around the sides of
@@ -119,7 +114,7 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
 {
     if ((col > size - 1)
         || (row > size - 1)
-        || (occupied_map[row][col] != Player::NONE) // vector of rows.
+        || (occupied_map[row][col].is_player()) // vector of rows.
         ) {
         cout << "Unauthorized move." << endl;
         return false;
@@ -132,17 +127,17 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
     unoccupied_list.erase(it);
 
     player_select(player);
-    unsigned new_tree_index = update_trees(col, row, player);
+    unsigned new_tree_index = update_trees(col, row);
     return connected_in_tree_check(side_a, side_b, new_tree_index);
 }
 
 void HexBoard::player_select(const Player player)
 {
-    if (player == Player::O) {
+    if (player.get() == player_e::O) {
         trees = &trees_O;
         side_a = east;
         side_b = west;
-    } else if (player == Player::X) {
+    } else if (player.get() == player_e::X) {
         trees = &trees_X;
         side_a = north;
         side_b = south;
@@ -152,8 +147,7 @@ void HexBoard::player_select(const Player player)
     }
 }
 
-unsigned HexBoard::update_trees(const unsigned col, const unsigned row,
-                                const Player player)
+unsigned HexBoard::update_trees(const unsigned col, const unsigned row)
 {
     unsigned vertex_name = coord2lin(col, row);
 
@@ -250,8 +244,7 @@ ostream& operator<< (ostream& os, const HexBoard& board)
 
         // The row itself.
         for (auto col_it = row_it->begin(); col_it != row_it->end(); ++col_it) {
-            os << setw(slot_width - 2)
-               << player2char[static_cast<short>(*col_it)];
+            os << setw(slot_width - 2) << *col_it;
             // Print the horizontal link after all but last column.
             if (col_it != row_it->end() - 1) {
                 os << " -";

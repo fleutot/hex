@@ -6,17 +6,11 @@ Implementation of a hex board
 
 #include <vector>
 #include "graph.hpp"
+#include "player.hpp"
 
 using namespace std;
 
 extern const int nb_players;
-extern const char player2char[];
-
-enum class Player: int {
-    NONE,
-    O,  // This is capital letter o.
-    X
-};
 
 class HexBoard {
 public:
@@ -25,17 +19,13 @@ public:
 
     // Play a move, returns false if the move was unauthorized.
     bool play(const unsigned col, const unsigned row, const Player player);
-
-    // Generate a list of unoccupied nodes.
-    const vector< pair<unsigned, unsigned> >& unoccupied_list_get() const {
-        return unoccupied_list;
+    bool play(const pair<unsigned, unsigned> coord, const Player player) {
+        return play(coord.first, coord.second, player);
     }
 
-    // Implemented for automated test purposes (see unit tests).
-    bool sanity_check();
-    int nb_trees_get(const Player player) {
-        player_select(player);
-        return trees->size();
+    // Return a list of all unoccupied slots.
+    const vector< pair<unsigned, unsigned> >& unoccupied_list_get() const {
+        return unoccupied_list;
     }
 
     unsigned size_get() const {
@@ -44,7 +34,7 @@ public:
 
     bool occupied_check(const unsigned col, const unsigned row) const {
         // map is a vector of rows.
-        return occupied_map[row][col] != Player::NONE;
+        return occupied_map[row][col].is_player();
     }
 
     friend ostream& operator<< (ostream& os, const HexBoard& h);
@@ -52,6 +42,13 @@ public:
     // different rows. This is meant to be used by operator<< only.
     void slanted_links_row_print(ostream& os, const unsigned slot_width,
                                  const unsigned row_index) const;
+
+    // Implemented for automated test purposes (see unit tests).
+    bool sanity_check();
+    int nb_trees_get(const Player player) {
+        player_select(player);
+        return trees->size();
+    }
 
 protected:
     unsigned size;
@@ -66,7 +63,7 @@ protected:
     vector< vector<Player> > occupied_map;
     // List of slots that are not occupied by anyone. This is redundant
     // information, but maintaining it here in this form removes the need to
-    // compute it many times.
+    // compute it many times when running an AI on the board.
     vector< pair<unsigned, unsigned> > unoccupied_list;
 
     // Collection of trees formed by each players' play.
@@ -97,8 +94,7 @@ protected:
 
     // Update the player's forest of trees with the newly played position col,
     // row. Return the index of the newly updated tree.
-    unsigned update_trees(const unsigned col, const unsigned row,
-                          const Player player);
+    unsigned update_trees(const unsigned col, const unsigned row);
 
     // If there is one, find the index of the tree in the given forest, which
     // contains the vertex passed as first parameter.

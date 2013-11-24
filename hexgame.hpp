@@ -11,12 +11,16 @@ Hex game class implementation
 
 class HexGame {
 public:
-    HexGame(unsigned size, Player start_player = Player::X):
-        board(size), current_player(start_player), winner(Player::NONE) {}
+    HexGame(unsigned size, player_e start_player = player_e::X):
+        board(size)
+    {
+        current_player.set(start_player);
+        winner.set(player_e::NONE);
+    }
 
     ~HexGame() {}
 
-    // Show the game introducttion header.
+    // Show the game introduction header.
     void start_prompt();
 
     // Let the user decide which players are AI or human.

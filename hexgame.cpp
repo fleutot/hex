@@ -19,11 +19,9 @@ void HexGame::start_prompt()
     cout << endl;
 }
 
-
 void HexGame::player_setup_prompt()
 {
 }
-
 
 bool HexGame::next_prompt_and_play()
 {
@@ -32,8 +30,7 @@ bool HexGame::next_prompt_and_play()
     cout << "X plays north and south." << endl;
     cout << "O plays west and east." << endl;
     cout << endl;
-    cout << "Player " << player2char[static_cast<short>(current_player)]
-         << ", please enter your move: ";
+    cout << "Player " << current_player << ", please enter your move: ";
 
     pair<unsigned, unsigned> move;
     bool valid_move;
@@ -47,31 +44,21 @@ bool HexGame::next_prompt_and_play()
     if (win) {
         winner = current_player;
     } else {
-        player_switch();
+        current_player.swap();
     }
 
     return win;
 }
 
-
 void HexGame::winner_print()
 {
     cout << endl;
     cout << board << endl << endl;
-    cout << "\t\t!!! Player " << player2char[static_cast<short>(winner)]
-         << " wins !!!" << endl;
+    cout << "\t\t!!! Player " << winner << " wins !!!" << endl;
 }
 
 void HexGame::player_switch()
 {
-    if (current_player == Player::O) {
-        current_player = Player::X;
-    } else if (current_player == Player::X) {
-        current_player = Player::O;
-    } else {
-        cerr << __func__ << ": erroneous value of current_player." << endl;
-        exit(1);
-    }
 }
 
 // Get the input pair in 0 based integers, return false if there was an error.
