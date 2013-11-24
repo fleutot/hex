@@ -1,9 +1,9 @@
 CC = g++
 CFLAGS = -Wall -Werror -O3 -std=c++11 -ggdb
 
-SRC = ../graph.cpp ../hexboard.cpp ../hexboardeval.cpp hexboardeval_test.cpp
+SRC = ../graph.cpp ../hexboard.cpp ../moveeval.cpp moveeval_test.cpp
 OBJ = $(SRC:.cpp=.o)
-TARGET = hexboardeval_test
+TARGET = moveeval_test
 
 all: $(TARGET)
 

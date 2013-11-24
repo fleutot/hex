@@ -7,6 +7,7 @@ Hex game class implementation
 
 #include "hexboard.hpp"
 #include "hexgame.hpp"
+#include "moveeval.hpp"
 
 using namespace std;
 
@@ -54,7 +55,18 @@ bool HexGame::next_prompt_and_play()
 
     do {
         cout << "Player " << current_player << ", please enter your move: ";
-        valid_move = input_get(move);
+
+        if (current_player_type_get() == PlayerType::HUMAN) {
+            valid_move = input_get(move);
+        } else if (current_player_type_get() == PlayerType::AI) {
+            cout << "thinking... ";
+            MoveEvaluator evaluator(board, current_player);
+            move = evaluator.best_move_calculate();
+            move_print(move);
+            cout << endl;
+            // Assume the AI only gives valid moves.
+            valid_move = true;
+        }
     } while (!valid_move);
 
     bool win = board.play(move.first, move.second, current_player);
@@ -73,6 +85,18 @@ void HexGame::winner_print()
     cout << endl;
     cout << board << endl << endl;
     cout << "\t\t!!! Player " << winner << " wins !!!" << endl;
+}
+
+PlayerType HexGame::current_player_type_get()
+{
+    if (current_player.get() == player_e::X) {
+        return player_X_type;
+    } else if (current_player.get() == player_e::O) {
+        return player_O_type;
+    } else {
+        cerr << __func__ << ": error in player type." << endl;
+        return PlayerType::NONE;
+    }
 }
 
 // Get the input pair in 0 based integers, return false if there was an error.

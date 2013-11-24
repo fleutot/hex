@@ -46,6 +46,10 @@ public:
         current = other();
     }
 
+    bool operator==(const Player& other) {
+        return other.current == current;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
 
 private:

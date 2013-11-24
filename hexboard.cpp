@@ -284,3 +284,8 @@ void HexBoard::slanted_links_row_print(ostream& os, const unsigned slot_width,
     }
     os << " \\" << endl;
 }
+
+void move_print(const pair<unsigned, unsigned> move)
+{
+    cout << static_cast<char>(move.first + 'A') << move.second + 1;
+}

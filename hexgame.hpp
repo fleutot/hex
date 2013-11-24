@@ -9,6 +9,8 @@ Hex game class implementation
 
 #include "hexboard.hpp"
 
+enum class PlayerType { NONE, AI, HUMAN};
+
 class HexGame {
 public:
     HexGame(unsigned size, player_e start_player = player_e::X):
@@ -32,11 +34,12 @@ public:
 
 protected:
     HexBoard board;
-    enum class PlayerType { NONE, AI, HUMAN};
     PlayerType player_X_type, player_O_type;
-    PlayerType current_player_type;
+
     Player current_player;
     Player winner;
+
+    PlayerType current_player_type_get();
 
     void human_prompt_play();
 

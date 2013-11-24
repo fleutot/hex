@@ -111,5 +111,6 @@ protected:
 };
 
 ostream& operator<< (ostream& os, const HexBoard& h);
+void move_print(const pair<unsigned, unsigned> move);
 
 #endif // HEXBOARD_HPP_INCLUDED

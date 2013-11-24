@@ -9,7 +9,7 @@ SRC_MST = graph.cpp mst_kruskal.cpp minimum_spanning_tree.cpp
 OBJ_MST = $(SRC_MST:.cpp=.o)
 TARGET_MST = minimum_spanning_tree
 
-SRC_HEX = graph.cpp hexboard.cpp hexgame.cpp hex.cpp player.cpp
+SRC_HEX = graph.cpp hexboard.cpp hexgame.cpp hex.cpp player.cpp moveeval.cpp
 OBJ_HEX = $(SRC_HEX:.cpp=.o)
 
 all: $(TARGET_MST) $(TARGET_ASP) $(TARGET_HEX)
