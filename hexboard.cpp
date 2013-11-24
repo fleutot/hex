@@ -1,6 +1,7 @@
 /*------------------------------------------------------------------------------
 Implementation of a hex board
 ------------------------------------------------------------------------------*/
+#include <algorithm>
 #include <cctype>
 #include <iostream>
 #include <iomanip>
@@ -85,6 +86,14 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
     trees_O.resize(2);
     trees_O[0].push_back(west);
     trees_O[1].push_back(east);
+
+    // All slots are unoccupied to start with.
+    unoccupied_list.reserve(size * size);
+    for (unsigned row = 0; row < size; ++row) {
+        for (unsigned col = 0; col < size; ++col) {
+            unoccupied_list.push_back(make_pair(col, row));
+        }
+    }
 }
     
 HexBoard::~HexBoard()
@@ -118,6 +127,9 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
 
     // order of row and col here inverted, occupied_map is a vector of rows.
     occupied_map[row][col] = player;
+    auto it = find(unoccupied_list.begin(), unoccupied_list.end(),
+                   make_pair(col, row));
+    unoccupied_list.erase(it);
 
     player_select(player);
     unsigned new_tree_index = update_trees(col, row, player);

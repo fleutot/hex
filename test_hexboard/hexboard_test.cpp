@@ -18,6 +18,7 @@ using namespace std;
 void test_hexboard_constructor(void);
 void test_hexboard_display(void);
 void test_hexboard_play(void);
+void test_hexboard_unoccupied_list_get();
 void test_hexboard_win_1(void);
 void test_hexboard_win_2(void);
 void test_hexboard_win_3(void);
@@ -27,6 +28,7 @@ int main(void)
     test_hexboard_constructor();
     test_hexboard_display();
     test_hexboard_play();
+    test_hexboard_unoccupied_list_get();
     test_hexboard_win_1();
     test_hexboard_win_2();
     test_hexboard_win_3();
@@ -78,6 +80,26 @@ void test_hexboard_play(void)
 
     board.play(0, 0, Player::X);
     assert(board.nb_trees_get(Player::X) == 1);
+}
+
+void test_hexboard_unoccupied_list_get()
+{
+    cout << __func__ << endl;
+    HexBoard board(2);
+    board.play(0, 1, Player::O);
+    board.play(1, 0, Player::O);
+
+    vector< pair<unsigned, unsigned> > free_list = board.unoccupied_list_get();
+
+    vector< pair<unsigned, unsigned> > expected_free;
+    expected_free.push_back(make_pair(0, 0));
+    expected_free.push_back(make_pair(1, 1));
+
+    assert(free_list.size() == expected_free.size());
+
+    for (unsigned i = 0; i < free_list.size(); ++i) {
+        assert(free_list[i] == expected_free[i]);
+    }
 }
 
 void test_hexboard_win_1(void)

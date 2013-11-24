@@ -26,6 +26,11 @@ public:
     // Play a move, returns false if the move was unauthorized.
     bool play(const unsigned col, const unsigned row, const Player player);
 
+    // Generate a list of unoccupied nodes.
+    const vector< pair<unsigned, unsigned> >& unoccupied_list_get() const {
+        return unoccupied_list;
+    }
+
     // Implemented for automated test purposes (see unit tests).
     bool sanity_check();
     int nb_trees_get(const Player player) {
@@ -57,7 +62,12 @@ protected:
     // condition is if west is connected to east, or north to south.
     int west, east, north, south;
 
+    // Map of who occupies which slot.
     vector< vector<Player> > occupied_map;
+    // List of slots that are not occupied by anyone. This is redundant
+    // information, but maintaining it here in this form removes the need to
+    // compute it many times.
+    vector< pair<unsigned, unsigned> > unoccupied_list;
 
     // Collection of trees formed by each players' play.
     vector< vector<int> > trees_O;
@@ -75,8 +85,14 @@ protected:
 
     // Convert a column and row pair to a linear index, which is used as a node
     // name in the graph.
-    unsigned coord2lin(unsigned col, unsigned row) {
+    unsigned coord2lin(unsigned col, unsigned row) const {
         return row * size + col;
+    }
+
+    // Convert a linear index to a column and a row coordinates.
+    void lin2coord(const unsigned lin, unsigned& col, unsigned& row) const {
+        row = lin / size;
+        col = lin % size;
     }
 
     // Update the player's forest of trees with the newly played position col,
