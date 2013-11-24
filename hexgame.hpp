@@ -24,7 +24,7 @@ public:
     void start_prompt();
 
     // Let the user decide which players are AI or human.
-    void player_setup_prompt();
+    void player_setup_prompt_and_set();
 
     bool next_prompt_and_play();   // returns true if the game is finished.
 
@@ -34,13 +34,15 @@ protected:
     HexBoard board;
     enum class PlayerType { NONE, AI, HUMAN};
     PlayerType player_X_type, player_O_type;
+    PlayerType current_player_type;
     Player current_player;
     Player winner;
 
     void human_prompt_play();
 
     bool input_get(pair<unsigned, unsigned>& move);
-    void player_switch();
+
+    bool char_to_player_type_set(const char c, PlayerType& type);
 };
 
 #endif // HEXGAME_H_INCLUDED

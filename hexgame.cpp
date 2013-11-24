@@ -19,8 +19,26 @@ void HexGame::start_prompt()
     cout << endl;
 }
 
-void HexGame::player_setup_prompt()
+void HexGame::player_setup_prompt_and_set()
 {
+    cout << "=========================" << endl;
+    cout << "Setup:" << endl;
+
+    bool entry_ok;
+    do {
+        cout << "Player X (plays first): (A)I or (H)uman?: ";
+        string type;
+        cin >> type;
+        // This is not very clean, but suffice for now.
+        entry_ok = char_to_player_type_set(type[0], player_X_type);
+    } while (!entry_ok);
+
+    do {
+        cout << "Player O: (A)I or (H)uman?: ";
+        string type;
+        cin >> type;
+        entry_ok = char_to_player_type_set(type[0], player_O_type);
+    } while (!entry_ok);
 }
 
 bool HexGame::next_prompt_and_play()
@@ -30,12 +48,12 @@ bool HexGame::next_prompt_and_play()
     cout << "X plays north and south." << endl;
     cout << "O plays west and east." << endl;
     cout << endl;
-    cout << "Player " << current_player << ", please enter your move: ";
 
     pair<unsigned, unsigned> move;
     bool valid_move;
 
     do {
+        cout << "Player " << current_player << ", please enter your move: ";
         valid_move = input_get(move);
     } while (!valid_move);
 
@@ -55,10 +73,6 @@ void HexGame::winner_print()
     cout << endl;
     cout << board << endl << endl;
     cout << "\t\t!!! Player " << winner << " wins !!!" << endl;
-}
-
-void HexGame::player_switch()
-{
 }
 
 // Get the input pair in 0 based integers, return false if there was an error.
@@ -83,4 +97,17 @@ bool HexGame::input_get(pair<unsigned, unsigned>& move)
     move.first = col;
     move.second = row;
     return true;
+}
+
+bool HexGame::char_to_player_type_set(const char c, PlayerType& type)
+{
+    if (toupper(c) == 'H') {
+        type = PlayerType::HUMAN;
+        return true;
+    } else if (toupper(c) == 'A') {
+        type = PlayerType::AI;
+        return true;
+    } else {
+        return false;
+    }
 }
