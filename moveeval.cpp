@@ -28,13 +28,11 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
             // Now play all other positions randomly until there is a win.
             // The first random move after the test position is done by the
             // other player.
-            Player random_player(tested_player.other());
-            win = random_play_until_win(test_board, random_player);
+            win = random_play_until_win(test_board, tested_player);
             if (win) {
                 ++score;
             }
         }
-
         if (score > best_score) {
             best_score = score;
             best_coord = test_coord;
@@ -43,6 +41,8 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
     return best_coord;
 }
 
+// Parameter "player" must be the last player to have played, since it will be
+// swapped to the other player before making the next move.
 bool MoveEvaluator::random_play_until_win(HexBoard& test_board, Player player)
 {
     vector< pair<unsigned, unsigned> > free_pos
@@ -55,9 +55,8 @@ bool MoveEvaluator::random_play_until_win(HexBoard& test_board, Player player)
     do {
         pair<unsigned, unsigned> next_move = free_pos.back();
         free_pos.pop_back();
-
-        win = test_board.play(next_move, player);
         player.swap();
+        win = test_board.play(next_move, player);
     } while (!win);
 
     // Return true if the winner of the random moves was the player we were

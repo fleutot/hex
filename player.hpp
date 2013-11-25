@@ -50,6 +50,10 @@ public:
         return other.current == current;
     }
 
+    bool operator!=(const Player& other) {
+        return !(*this == other);
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Player& player);
 
 private:

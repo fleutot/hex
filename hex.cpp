@@ -2,7 +2,8 @@
 hex.cpp
 Run a game of hex.
 ------------------------------------------------------------------------------*/
-#include <cstdlib>  // atoi
+#include <cstdlib>  // atoi, rand
+#include <ctime>
 #include <iostream>
 #include <utility>  // pair
 
@@ -13,6 +14,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    srand(time(0));
+
     const int max_width = 26u;
 
     if ((argc != 2) || (atoi(argv[1]) > max_width))  {
@@ -31,7 +34,6 @@ int main(int argc, char *argv[])
 
     do {
         win = game.next_prompt_and_play();
-        //MoveEvaluator ai(game, 100);
     } while (!win);
 
     game.winner_print();
