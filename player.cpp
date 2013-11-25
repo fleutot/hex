@@ -20,7 +20,7 @@ ostream& operator<<(ostream& os, const Player& player)
     // os << player2char[static_cast<int>(player.get())];
 
     if (player.get() == player_e::NONE) {
-        os << ".";
+        os << " ";
     } else if (player.get() == player_e::X) {
         os << "X";
     } else if (player.get() == player_e::O) {

@@ -101,9 +101,9 @@ protected:
     // Return false if no tree was found, true otherwise.
     bool containing_tree_get(const int vertex_name, unsigned& found_tree_index);
 
-    // Merge two trees into one, if not the same. Three B is destroyed after
-    // having been merged into A.
-    void trees_merge(unsigned& index_a, unsigned index_b);
+    // Merge two trees into one, if not the same. One of the trees is destroyed
+    // as a result of the merge.
+    unsigned trees_merge(unsigned index_a, unsigned index_b);
 
     // Check if two nodes are connected in the tree passed as parameter.
     bool connected_in_tree_check(const int node_a, const int node_b,

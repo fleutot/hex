@@ -1,6 +1,7 @@
 /*----------------------------------------------------------------------------
 Graph class implementation
 ----------------------------------------------------------------------------*/
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <iomanip>  // For width of display
@@ -50,23 +51,9 @@ static void reorder_values(T& a, T& b)
 }
 
 //  ----------------------------------------------------------------------------
-/// \brief  Calculate a random cost between 1.0 and max_cost.
-/// Note: this would not work if cost_t was integer.
-/// \param  Max cost
-/// \return Random cost.
-//  ----------------------------------------------------------------------------
-static cost_t random_cost_calculate(const cost_t min_cost,
-                                    const cost_t max_cost)
-{
-    return (static_cast<cost_t> (rand()) / RAND_MAX) * (max_cost - min_cost)
-        + min_cost;
-}
-
-
-//  ----------------------------------------------------------------------------
 /// Class Edge
 //  ----------------------------------------------------------------------------
-Edge::Edge(int start, int end, cost_t cost, short type)
+Edge::Edge(int start, int end, cost_t cost)
 {
     if (start == end) {
         cerr << "Created an edge with same start and end! (" << start
@@ -81,7 +68,6 @@ Edge::Edge(int start, int end, cost_t cost, short type)
         this->end = end;
     }
     this->cost = cost;
-    this->type = type;
 }
 
 Edge::~Edge()
@@ -124,7 +110,7 @@ bool operator!=(const Edge& a, const Edge& b)
 ostream& operator<<(ostream& os, const Edge& e)
 {
     os << "(" << e.start << ", " << e.end << "): cost "
-       << e.cost << ", type " << e.type;
+       << e.cost;
     return os;
 }
 
@@ -135,45 +121,30 @@ ostream& operator<<(ostream& os, const Edge& e)
 /// which must be an actual edge.
 /// \param  max_cost    Maximal cost for any of the edges created.
 //  ----------------------------------------------------------------------------
-Graph::Graph(const int nb_vertices = 50): nb_vertices(nb_vertices)
+Graph::Graph(const int nb_vertices = 50): nb_vertices(nb_vertices), nb_edges(0)
 {
     node_names_init();
-}
+    neighbors.resize(nb_vertices);
 
-Graph::Graph(const int nb_vertices, vector<Edge> edge_list):
-    edge_list(edge_list),
-    nb_vertices(nb_vertices)
-{
-    node_names_init();
-}
-
-// Constructor for a random graph.
-Graph::Graph(const int nb_vertices,
-             const double edge_density,
-             const cost_t min_cost,
-             const cost_t max_cost):
-    nb_vertices(nb_vertices)
-{
-    // -1 because there are no edges from a vertex to itself.
-    // /2 because edges are undirectional.
-    int nb_edges = static_cast<int> (nb_vertices * (nb_vertices - 1)
-                                     * edge_density / 2);
-
-    vector<Edge> possible_edges = all_possible_edges_generate();
-    edge_list = random_pick(possible_edges, nb_edges);
-
-    for (unsigned i = 0; i < edge_list.size(); ++i) {
-        edge_list[i].cost_set(random_cost_calculate(min_cost, max_cost));
+    costs.resize(nb_vertices);
+    for (int i = 0; i < nb_vertices; ++i) {
+        costs[i].resize(nb_vertices);
     }
-    node_names_init();
 }
 
 // Constructor with file input.
-Graph::Graph(const string filename)
+Graph::Graph(const string filename): nb_edges(0)
 {
     ifstream ifp(filename);
 
     ifp >> nb_vertices;
+
+    costs.resize(nb_vertices);
+    for (int i = 0; i < nb_vertices; ++i) {
+        costs[i].resize(nb_vertices);
+    }
+    node_names_init();
+    neighbors.resize(nb_vertices);
 
     int start, end;
     cost_t cost;
@@ -181,7 +152,6 @@ Graph::Graph(const string filename)
     while (ifp >> start >> end >> cost) {
         edge_add(start, end, cost);
     }
-    node_names_init();
 }
 
 //  ----------------------------------------------------------------------------
@@ -237,42 +207,15 @@ ostream& operator<<(ostream& os, Graph graph)
 //  ----------------------------------------------------------------------------
 /// \brief  Check if an edge exists, regardless of cost.
 /// \return True if the edge existed.
-/// \return index: the index in the edge list if the edge existed.
 //  ----------------------------------------------------------------------------
-bool Graph::edge_exists(int start, int end, int& index) const
+bool Graph::edge_exists(const int start, const int end) const
 {
-    reorder_values(start, end);
-    for (unsigned int i = 0; i < edge_list.size(); ++i) {
-        if ((start == edge_list[i].start_get())
-            && (end == edge_list[i].end_get())
-            ) {
-            index = i;
-            return true;
-        }
-    }
-    return false;
+    auto found_index = find(neighbors[start].begin(), neighbors[start].end(), end);
+    return found_index != neighbors[start].end();
 }
 
-//  ----------------------------------------------------------------------------
-/// \brief  Check if an edge exists, regardless of cost.
-/// \return True if the edge existed.
-//  ----------------------------------------------------------------------------
-bool Graph::edge_exists(int start, int end) const
+void Graph::edge_add(const int start, const int end, const cost_t cost)
 {
-    reorder_values(start, end);
-    for (unsigned int i = 0; i < edge_list.size(); ++i) {
-        if ((start == edge_list[i].start_get())
-            && (end == edge_list[i].end_get())
-            ) {
-            return true;
-        }
-    }
-    return false;
-}
-
-void Graph::edge_add(int start, int end, const cost_t cost)
-{
-    reorder_values(start, end);
     // Check first that the edge does not exist already, even if it has a
     // different cost.
     if (edge_exists(start, end)) {
@@ -281,31 +224,24 @@ void Graph::edge_add(int start, int end, const cost_t cost)
         //     << endl;
         return;
     }
-
-    Edge new_edge = Edge(start, end, cost);
-    edge_list.push_back(new_edge);
+    neighbors[start].push_back(end);
+    neighbors[end].push_back(start);
+    costs[start][end] = cost;
+    costs[end][start] = cost;
+    ++nb_edges;
 }
-
-
-const vector<Edge>& Graph::edge_list_get() const
-{
-    return edge_list;
-}
-
 
 //  ----------------------------------------------------------------------------
 /// \brief  Set the cost of an edge. The edge must already exist, otherwise use
 /// edge_add().
 //  ----------------------------------------------------------------------------
-void Graph::edge_cost_set(int start, int end, const cost_t cost)
+void Graph::edge_cost_set(const int start, const int end, const cost_t cost)
 {
-    reorder_values(start, end);
-    int found_index = 0;
-    bool found = edge_exists(start, end, found_index);
-    if (found) {
-        edge_list[found_index].cost_set(cost);
+    if (edge_exists(start, end)) {
+        costs[start][end] = cost;
+        costs[end][start] = cost;
     } else {
-        cout << __func__ << ": cost_set must have an existing edge." << endl;
+        cerr << __func__ << ": cost_set must have an existing edge." << endl;
     }
 }
 
@@ -314,59 +250,12 @@ void Graph::edge_cost_set(int start, int end, const cost_t cost)
 /// \param  start, end.
 /// \return The cost of the edge, 0 if there is no such edge.
 //  ----------------------------------------------------------------------------
-cost_t Graph::edge_cost_get(int start, int end) const
+cost_t Graph::edge_cost_get(const int start, const int end) const
 {
-    cost_t cost = 0;
-
-    reorder_values(start, end);
-    int found_index = 0;
-    bool found = edge_exists(start, end, found_index);
-    if (found) {
-        cost = edge_list[found_index].cost_get();
+    if (edge_exists(start, end)) {
+        return costs[start][end];
     }
-    return cost;
-}
-
-void Graph::edge_type_set(int start, int end, const short type)
-{
-    reorder_values(start, end);
-    int found_index = 0;
-    bool found = edge_exists(start, end, found_index);
-    if (found) {
-        edge_list[found_index].type_set(type);
-    } else {
-        cout << __func__ << ": type_set must have an existing edge." << endl;
-    }
-}
-
-short Graph::edge_type_get(int start, int end) const
-{
-    short type = 0;
-
-    reorder_values(start, end);
-    int found_index = 0;
-    bool found = edge_exists(start, end, found_index);
-    if (found) {
-        type = edge_list[found_index].type_get();
-    } else {
-        cerr << __func__ << ": edge not found" << endl;
-    }
-    return type;
-}
-
-bool Graph::adjacent_check(int node_a, int node_b) const
-{
-    // Make sure node_a has the lower value of the two, as it is the standard
-    // for Edge to have start less than end.
-    reorder_values(node_a, node_b);
-    for (unsigned int i = 0; i < edge_list.size(); ++i) {
-        if ((edge_list[i].start_get() == node_a)
-             && (edge_list[i].end_get() == node_b)
-            ){
-            return true;
-        }
-    }
-    return false;
+    return 0;
 }
 
 vector<Edge> Graph::all_possible_edges_generate(void) const
@@ -407,20 +296,4 @@ void Graph::node_names_init()
     for (int i = 0; i < nb_vertices; ++i) {
         nodes[i] = i;
     }
-}
-
-//  ----------------------------------------------------------------------------
-/// \brief  Lists all nodes y such that there is an edge from node to y.
-//  ----------------------------------------------------------------------------
-vector<int> Graph::neighbors_get(const int node) const
-{
-    vector<int> neighbors;
-    for (unsigned int i = 0; i < edge_list.size(); ++i) {
-        if (edge_list[i].start_get() == node) {
-            neighbors.push_back(edge_list[i].end_get());
-        } else if (edge_list[i].end_get() == node) {
-            neighbors.push_back(edge_list[i].start_get());
-        }
-    }
-    return neighbors;
 }

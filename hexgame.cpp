@@ -60,7 +60,7 @@ bool HexGame::next_prompt_and_play()
             valid_move = input_get(move);
         } else if (current_player_type_get() == PlayerType::AI) {
             cout << "thinking... " << flush;
-            MoveEvaluator evaluator(board, current_player);
+            MoveEvaluator evaluator(board, current_player, 100);
             move = evaluator.best_move_calculate();
             move_print(move);
             cout << endl;

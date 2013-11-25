@@ -156,41 +156,47 @@ unsigned HexBoard::update_trees(const unsigned col, const unsigned row)
     trees->resize(new_tree_index + 1);
     (*trees)[new_tree_index].push_back(vertex_name);
 
-    // Check if neighbors are already trees, and merge in that case.
+    // Check if neighbors are already in trees, and merge in that case.
     vector<int> neighbors = board.neighbors_get(vertex_name);
-    for (auto vertex_name: neighbors) {
+    for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
         unsigned neighbor_tree_index;
-        if (containing_tree_get(vertex_name, neighbor_tree_index)) {
-            trees_merge(neighbor_tree_index, new_tree_index);
-            // The tree that was earlier created with only one vertex does not
-            // exist anymore, it has been merged with adjacent_tree.
-            // Further merges must happen with the old but updated tree.
-            new_tree_index = neighbor_tree_index;
+        if (containing_tree_get(*it, neighbor_tree_index)) {
+            new_tree_index = trees_merge(neighbor_tree_index, new_tree_index);
         }
     }
     return new_tree_index;
 }
 
-bool HexBoard::containing_tree_get(const int vertex_name, unsigned& found_tree_index)
+bool HexBoard::containing_tree_get(const int vertex_name,
+                                   unsigned& found_tree_index)
 {
     for (unsigned i = 0; i < trees->size(); ++i) {
-        for (auto test_vertex: (*trees)[i]) {
-            if (test_vertex == vertex_name) {
-                found_tree_index = i;
-                return true;
-            }
+        auto found_it = find((*trees)[i].begin(), (*trees)[i].end(),
+                             vertex_name);
+        if (found_it != (*trees)[i].end()) {
+            found_tree_index = i;
+            return true;
         }
     }
     return false;
 }
 
-void HexBoard::trees_merge(unsigned& index_a, unsigned index_b)
+// Merge a and b together, return the index of the merged tree.
+unsigned HexBoard::trees_merge(unsigned index_a, unsigned index_b)
 {
     if (index_a == index_b) {
-        return;
+        return index_a;
     }
 
     vector< vector<int> >& forest = *trees;  // for readability.
+
+    // Make sure to merge the shorter tree into the longer one. This function
+    // was profiled to take much time, hence this optimization.
+    if (forest[index_a].size() < forest[index_b].size()) {
+        unsigned temp = index_a;
+        index_a = index_b;
+        index_b = temp;
+    }
 
     forest[index_a].reserve(forest[index_a].size() + forest[index_b].size());
     forest[index_a].insert(forest[index_a].end(),
@@ -198,9 +204,10 @@ void HexBoard::trees_merge(unsigned& index_a, unsigned index_b)
 
     forest.erase(forest.begin() + index_b);
     if (index_a > index_b) {
-        // A tree before index_a was erased, update the index.
+        // The erased tree was before index_a, update the index.
         --index_a;
     }
+    return index_a;
 }
 
 bool HexBoard::connected_in_tree_check(const int node_a, const int node_b,
