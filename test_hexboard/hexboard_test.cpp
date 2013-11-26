@@ -23,6 +23,7 @@ static const Player player_X(player_e::X);
 // Function prototypes
 //******************************************************************************
 void test_hexboard_constructor(void);
+void test_hexboard_copy_constructor(void);
 void test_hexboard_display(void);
 void test_hexboard_play(void);
 void test_hexboard_unoccupied_list_get();
@@ -33,6 +34,7 @@ void test_hexboard_win_3(void);
 int main(void)
 {
     test_hexboard_constructor();
+    test_hexboard_copy_constructor();
     test_hexboard_display();
     test_hexboard_play();
     test_hexboard_unoccupied_list_get();
@@ -50,6 +52,16 @@ void test_hexboard_constructor(void)
     assert(board.sanity_check());
 }
 
+void test_hexboard_copy_constructor(void)
+{
+    cout << __func__ << endl;
+    HexBoard board(2);
+    board.play(1, 1, player_O);
+    HexBoard board_copy(board);
+    bool win = board_copy.play(0, 1, player_O);
+    assert(win);
+}
+
 void test_hexboard_display(void)
 {
     cout << __func__ << endl;
@@ -63,6 +75,7 @@ void test_hexboard_play(void)
     HexBoard board(3);
 
     board.play(1, 1, player_O);
+    //cout << board << endl;
     assert(board.nb_trees_get(player_O) == 1 + 2); // includes virtual nodes.
     cout << board << endl << endl;
 

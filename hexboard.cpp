@@ -14,12 +14,15 @@ using namespace std;
 
 const int nb_players = 2;
 
-// 4 extra virtual nodes for the board, representing the edges. These were added
-// to ease checking for winning condition.
-HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
+HexBoard::HexBoard(unsigned size): size(size),
                                    west(size * size), east(size * size + 1),
                                    north(size * size + 2), south(size * size +3)
 {
+    // 4 extra virtual nodes for the board, representing the rims. These were
+    // added to ease checking for winning condition.
+    board = new Graph(size * size + 4);
+    nb_refs_to_board = new unsigned(1);
+
     occupied_map.resize(size);
     for (auto it = occupied_map.begin(); it != occupied_map.end(); ++it) {
         it->resize(size);   // Default value for objects Player is NONE.
@@ -35,22 +38,22 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
         unsigned vertix = coord2lin(0, row);
         unsigned vertix_3oclock = coord2lin(1, row);
         unsigned vertix_5oclock = coord2lin(0, row + 1);
-        board.edge_add(vertix, vertix_3oclock);
-        board.edge_add(vertix, vertix_5oclock);
+        board->edge_add(vertix, vertix_3oclock);
+        board->edge_add(vertix, vertix_5oclock);
         // no 7 o'clock for this side of the board.
 
         // East edge
         vertix = coord2lin(size - 1, row);
         vertix_5oclock = coord2lin(size - 1, row + 1);
         unsigned vertix_7oclock = coord2lin(size - 2, row + 1);
-        board.edge_add(vertix, vertix_5oclock);
-        board.edge_add(vertix, vertix_7oclock);
+        board->edge_add(vertix, vertix_5oclock);
+        board->edge_add(vertix, vertix_7oclock);
         // no 3 o'clock for this side of the board.
     }
     // South edge of the board.
     for (unsigned col = 0; col < size - 1; ++col) {
         // 3 o'clock edge.
-        board.edge_add(coord2lin(col, size - 1), coord2lin(col + 1, size - 1));
+        board->edge_add(coord2lin(col, size - 1), coord2lin(col + 1, size - 1));
     }
     // All other vertices.
     for (unsigned col = 1; col < size - 1; ++col) {
@@ -59,18 +62,18 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
             unsigned vertix_3oclock = coord2lin(col + 1, row);
             unsigned vertix_5oclock = coord2lin(col, row + 1);
             unsigned vertix_7oclock = coord2lin(col - 1, row + 1);
-            board.edge_add(vertix, vertix_3oclock);
-            board.edge_add(vertix, vertix_5oclock);
-            board.edge_add(vertix, vertix_7oclock);
+            board->edge_add(vertix, vertix_3oclock);
+            board->edge_add(vertix, vertix_5oclock);
+            board->edge_add(vertix, vertix_7oclock);
         }
     }
 
     // Virtual nodes connect to all the nodes of their board side.
     for (unsigned i = 0; i < size; ++i) {
-        board.edge_add(west, coord2lin(0, i));
-        board.edge_add(east, coord2lin(size - 1, i));
-        board.edge_add(north, coord2lin(i, 0));
-        board.edge_add(south, coord2lin(i, size - 1));
+        board->edge_add(west, coord2lin(0, i));
+        board->edge_add(east, coord2lin(size - 1, i));
+        board->edge_add(north, coord2lin(i, 0));
+        board->edge_add(south, coord2lin(i, size - 1));
     }
 
     // Add virtual nodes to the players' trees.
@@ -90,18 +93,33 @@ HexBoard::HexBoard(unsigned size): size(size), board(size * size + 4),
         }
     }
 }
-    
+
+HexBoard::HexBoard(HexBoard& origin):
+    size(origin.size), board(origin.board),
+    nb_refs_to_board(origin.nb_refs_to_board), west(origin.west),
+    east(origin.east), north(origin.north), south(origin.south),
+    occupied_map(origin.occupied_map),
+    unoccupied_list(origin.unoccupied_list), trees_O(origin.trees_O),
+    trees_X(origin.trees_X), trees(origin.trees), side_a(origin.side_a),
+    side_b(origin.side_b)
+{
+    origin.refs_to_board_increment();
+}
+
 HexBoard::~HexBoard()
 {
-    // do nothing. The build process wanted a definition here, rather than an
-    // empty one in the class implementation, or implicit definition.  It would
-    // be interesting to know why, but there is no time now.
+    unsigned refs_left = refs_to_board_decrement();
+
+    if (refs_left == 0) {
+        delete board;
+        delete nb_refs_to_board;
+    }
 }
 
 bool HexBoard::sanity_check()
 {
-    return (board.nb_vertices_get() == (size * size + 4)
-            && board.nb_edges_get() == (
+    return (board->nb_vertices_get() == (size * size + 4)
+            && board->nb_edges_get() == (
                 (3 * size * (size - 1) - (size - 1))    // real board edges
                 + (4 * size))    // edges to virtual nodes.
             && occupied_map.size() == size
@@ -116,7 +134,9 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
         || (row > size - 1)
         || (occupied_map[row][col].is_player()) // vector of rows.
         ) {
-        cout << "Unauthorized move." << endl;
+        cout << "Unauthorized move: (" << col << ", " << row << ") = " ;
+        move_print(make_pair(col, row)) ;
+        cout << endl;
         return false;
     }
 
@@ -135,8 +155,8 @@ void HexBoard::player_select(const Player player)
 {
     if (player.get() == player_e::O) {
         trees = &trees_O;
-        side_a = east;
-        side_b = west;
+        side_a = west;
+        side_b = east;
     } else if (player.get() == player_e::X) {
         trees = &trees_X;
         side_a = north;
@@ -157,7 +177,7 @@ unsigned HexBoard::update_trees(const unsigned col, const unsigned row)
     (*trees)[new_tree_index].push_back(vertex_name);
 
     // Check if neighbors are already in trees, and merge in that case.
-    vector<int> neighbors = board.neighbors_get(vertex_name);
+    vector<int> neighbors = board->neighbors_get(vertex_name);
     for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
         unsigned neighbor_tree_index;
         if (containing_tree_get(*it, neighbor_tree_index)) {

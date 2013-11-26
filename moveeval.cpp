@@ -11,6 +11,8 @@ hexboardeval.cpp
 
 using namespace std;
 
+static const unsigned max_simulations_per_test_move = 1000U;
+
 pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
 {
     const vector< pair<unsigned, unsigned> > free_slots
@@ -18,6 +20,9 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
 
     const unsigned nb_simulations_per_move = nb_total_simulations
             / free_slots.size();
+    if (nb_simulations_per_move > max_simulations_per_test_move) {
+        nb_simulations_per_move = max_simulations_per_test_move;
+    }
 
     for (auto test_coord: free_slots) {
         // Run all the simulations with this test move first, keeping track of

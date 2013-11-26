@@ -18,7 +18,7 @@ public:
     // simulations per move).
     // max_test_moves: max number of test moves to evaluate. If larger than the
     // number of free positions, evaluate all free positions.
-    MoveEvaluator(const HexBoard& base_board,
+    MoveEvaluator(HexBoard& base_board,
                   const Player current_player,
                   const unsigned nb_simulations = 20000,
                   const unsigned max_test_moves = UINT_MAX):
@@ -39,7 +39,7 @@ public:
 protected:
     bool random_play_until_win(HexBoard& test_board, Player player);
 
-    const HexBoard& real_board;
+    HexBoard& real_board;
 
     const Player tested_player;
     // The number of next moves to evaluate. If larger than the number of free

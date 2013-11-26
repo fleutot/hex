@@ -109,7 +109,9 @@ bool HexGame::human_input_get(pair<unsigned, unsigned>& move)
     if ((col >= board.size_get()) || (row >= board.size_get()) ||
         board.occupied_check(col, row)
         ) {
-        cout << "############ Unauthorized move, try again! ###########" << endl;
+        cout << "############ Unauthorized move";
+        move_print(make_pair(col, row));
+        cout << ", try again! ###########" << endl;
         return false;
     }
 

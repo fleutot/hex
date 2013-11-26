@@ -15,6 +15,7 @@ extern const int nb_players;
 class HexBoard {
 public:
     HexBoard(unsigned size);
+    HexBoard(HexBoard& origin);
     ~HexBoard();
 
     // Play a move, returns false if the move was unauthorized.
@@ -30,6 +31,17 @@ public:
 
     unsigned size_get() const {
         return size;
+    }
+
+    unsigned refs_to_board_increment() {
+        return ++(*nb_refs_to_board);
+    }
+
+    unsigned refs_to_board_decrement() {
+        if (*nb_refs_to_board > 0) {
+            --(*nb_refs_to_board);
+        }
+        return *nb_refs_to_board;
     }
 
     bool occupied_check(const unsigned col, const unsigned row) const {
@@ -52,7 +64,15 @@ public:
 
 protected:
     unsigned size;
-    Graph board;
+
+    // Dynamically allocated, to make the default copy constructor do a shallow
+    // copy. Copies of HexBoard do not modify the board graph itself, there is
+    // therefore no reason to make a deep copy of it, all copies of HexBoard can
+    // use the same graph as the original.
+    Graph *board;
+    // Keep track of how many HexBoard instances use the graph above. Only
+    // delete the graph if the last HexBoard instance using it is destroyed.
+    unsigned *nb_refs_to_board;
 
     // Virtual nodes to represent the sides of the board. These are vertices in
     // the graph, and connected to every position in the side. A winning
