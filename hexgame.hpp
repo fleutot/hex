@@ -43,7 +43,8 @@ protected:
 
     void human_prompt_play();
 
-    bool input_get(pair<unsigned, unsigned>& move);
+    bool human_input_get(pair<unsigned, unsigned>& move);
+    void ai_input_get(pair<unsigned, unsigned>& move);
 
     bool char_to_player_type_set(const char c, PlayerType& type);
 };

@@ -3,6 +3,7 @@ Hex Board Evaluator
 hexboardeval.cpp
 ------------------------------------------------------------------------------*/
 #include <algorithm>
+#include <vector>
 #include <utility>
 
 #include "hexboard.hpp"
@@ -12,8 +13,13 @@ using namespace std;
 
 pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
 {
-    // So far, testing all unoccupied positions.
-    for (auto test_coord: real_board.unoccupied_list_get()) {
+    const vector< pair<unsigned, unsigned> > free_slots
+                  = real_board.unoccupied_list_get();
+
+    const unsigned nb_simulations_per_move = nb_total_simulations
+            / free_slots.size();
+
+    for (auto test_coord: free_slots) {
         // Run all the simulations with this test move first, keeping track of
         // the number of times it led to a win (score).
         int score = 0;
@@ -63,3 +69,4 @@ bool MoveEvaluator::random_play_until_win(HexBoard& test_board, Player player)
     // testing for.
     return player == tested_player;
 }
+

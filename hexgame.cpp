@@ -57,15 +57,10 @@ bool HexGame::next_prompt_and_play()
         cout << "Player " << current_player << ", please enter your move: ";
 
         if (current_player_type_get() == PlayerType::HUMAN) {
-            valid_move = input_get(move);
+            valid_move = human_input_get(move);
         } else if (current_player_type_get() == PlayerType::AI) {
-            cout << "thinking... " << flush;
-            MoveEvaluator evaluator(board, current_player, 100);
-            move = evaluator.best_move_calculate();
-            move_print(move);
-            cout << endl;
-            // Assume the AI only gives valid moves.
-            valid_move = true;
+            ai_input_get(move);
+            valid_move = true;  // Assume the AI only gives valid moves.
         }
     } while (!valid_move);
 
@@ -95,12 +90,12 @@ PlayerType HexGame::current_player_type_get()
         return player_O_type;
     } else {
         cerr << __func__ << ": error in player type." << endl;
-        return PlayerType::NONE;
+        exit(1);
     }
 }
 
 // Get the input pair in 0 based integers, return false if there was an error.
-bool HexGame::input_get(pair<unsigned, unsigned>& move)
+bool HexGame::human_input_get(pair<unsigned, unsigned>& move)
 {
     string in;
     cin >> in;
@@ -121,6 +116,15 @@ bool HexGame::input_get(pair<unsigned, unsigned>& move)
     move.first = col;
     move.second = row;
     return true;
+}
+
+void HexGame::ai_input_get(pair<unsigned, unsigned>& move)
+{
+    cout << "thinking... " << flush;
+    MoveEvaluator evaluator(board, current_player);
+    move = evaluator.best_move_calculate();
+    move_print(move);
+    cout << endl;
 }
 
 bool HexGame::char_to_player_type_set(const char c, PlayerType& type)
