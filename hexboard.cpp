@@ -121,13 +121,34 @@ void HexBoard::place(const unsigned col, const unsigned row, const Player player
     unoccupied_list.erase(it);
 }
 
+void HexBoard::fill_up(Player player)
+{
+    vector< pair<unsigned, unsigned> > free_pos = unoccupied_list_get();
+
+    // Order the future moves randomly.
+    random_shuffle(free_pos.begin(), free_pos.end());
+
+    // If the number of free position is not even, first_player is the one to
+    // play once more than the other. This is solved with integer division,
+    // which truncates downwards, and starting with the other player.
+    player.swap();
+    unsigned i;
+    for (i = 0; i < free_pos.size() / 2; ++i) {
+        occupied_map[free_pos[i].second][free_pos[i].first] = player;
+    }
+    player.swap();
+    for (; i < free_pos.size(); ++i) {
+        occupied_map[free_pos[i].second][free_pos[i].first] = player;
+    }
+}
+
 bool HexBoard::win_check(const Player player)
 {
     player_select(player);
 
     vector<int> unvisited = occupied_list_get(player);
+    unsigned node = side_a; // Start board rim.
     unvisited.push_back(side_b);    // Target board rim.
-    unsigned node = side_a; // Start at a board rim.
     return win_search_recursive(node, unvisited);
 }
 

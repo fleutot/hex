@@ -28,18 +28,22 @@ void test_hexboard_display(void);
 void test_hexboard_play(void);
 void test_hexboard_unoccupied_list_get();
 void test_hexboard_occupied_list_get();
+void test_hexboard_fill_up();
 void test_hexboard_win_1(void);
 void test_hexboard_win_2(void);
 void test_hexboard_win_3(void);
 
 int main(void)
 {
+    srand(time(0));
+
     test_hexboard_constructor();
     test_hexboard_copy_constructor();
     test_hexboard_display();
     test_hexboard_play();
     test_hexboard_unoccupied_list_get();
     test_hexboard_occupied_list_get();
+    test_hexboard_fill_up();
     test_hexboard_win_1();
     test_hexboard_win_2();
     test_hexboard_win_3();
@@ -132,6 +136,45 @@ void test_hexboard_occupied_list_get()
 
 }
 
+void test_hexboard_fill_up()
+{
+    cout << __func__ << endl;
+    for (unsigned i = 0; i < 20; ++i) {
+        HexBoard board(3);
+        board.fill_up(player_O);
+
+        vector<int> occupied_O = board.occupied_list_get(player_O);
+        assert(occupied_O.size() == 5);
+
+        vector<int> occupied_X = board.occupied_list_get(player_X);
+        assert(occupied_X.size() == 4);
+    }
+
+    for (unsigned i = 0; i < 20; ++i) {
+        HexBoard board(3);
+        board.fill_up(player_X);
+
+        vector<int> occupied_O = board.occupied_list_get(player_O);
+        assert(occupied_O.size() == 4);
+
+        vector<int> occupied_X = board.occupied_list_get(player_X);
+        assert(occupied_X.size() == 5);
+    }
+
+    for (unsigned i = 0; i < 20; ++i) {
+        HexBoard board(3);
+        board.play(0, 1, player_O);
+
+        board.fill_up(player_X);
+
+        vector<int> occupied_O = board.occupied_list_get(player_O);
+        assert(occupied_O.size() == 5);
+
+        vector<int> occupied_X = board.occupied_list_get(player_X);
+        assert(occupied_X.size() == 4);
+    }
+}
+
 void test_hexboard_win_1(void)
 {
     cout << __func__ << endl;
@@ -162,8 +205,6 @@ void test_hexboard_win_1(void)
     win = board.play(1, 0, player_O);
     assert(win);
     assert(board.win_check(player_O));
-
-    cout << board << endl;
 }
 
 void test_hexboard_win_2(void)

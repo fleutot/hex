@@ -31,6 +31,8 @@ public:
 
     bool win_check(const Player player);
 
+    void fill_up(const Player first_player);
+
     // Return a list of all unoccupied slots.
     const vector< pair<unsigned, unsigned> >& unoccupied_list_get() const {
         return unoccupied_list;
