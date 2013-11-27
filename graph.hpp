@@ -66,7 +66,6 @@ private:
 
     std::vector<int> nodes;
     std::vector< std::vector<int> > neighbors;
-    // cost of edges, only filled in with [start][end], with start < end.
     std::vector< std::vector<cost_t> > costs;
 
     int nb_vertices;

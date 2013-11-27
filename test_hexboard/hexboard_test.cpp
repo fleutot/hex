@@ -27,6 +27,7 @@ void test_hexboard_copy_constructor(void);
 void test_hexboard_display(void);
 void test_hexboard_play(void);
 void test_hexboard_unoccupied_list_get();
+void test_hexboard_occupied_list_get();
 void test_hexboard_win_1(void);
 void test_hexboard_win_2(void);
 void test_hexboard_win_3(void);
@@ -38,6 +39,7 @@ int main(void)
     test_hexboard_display();
     test_hexboard_play();
     test_hexboard_unoccupied_list_get();
+    test_hexboard_occupied_list_get();
     test_hexboard_win_1();
     test_hexboard_win_2();
     test_hexboard_win_3();
@@ -123,6 +125,28 @@ void test_hexboard_unoccupied_list_get()
     }
 }
 
+void test_hexboard_occupied_list_get()
+{
+    cout << __func__ << endl;
+    HexBoard board(3);
+    board.play(0, 1, player_O);
+    board.play(1, 0, player_O);
+    board.play(2, 0, player_O);
+    board.play(2, 2, player_O);
+    board.play(2, 1, player_X);
+
+    vector<int> occupied_O = board.occupied_list_get(player_O);
+
+    int expected[] = {1, 2, 3, 8};
+
+    assert(occupied_O.size() == (sizeof(expected) / sizeof(expected[0])));
+
+    for (unsigned i = 0; i < occupied_O.size(); ++i) {
+        assert(occupied_O[i] == expected[i]);
+    }
+
+}
+
 void test_hexboard_win_1(void)
 {
     cout << __func__ << endl;
@@ -132,16 +156,28 @@ void test_hexboard_win_1(void)
 
     win = board.play(1, 1, player_X);
     assert(!win);
+    assert(!board.win_check(player_X));
+
     win = board.play(0, 0, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
+
     win = board.play(1, 2, player_X);
     assert(!win);
+    assert(!board.win_check(player_X));
+
     win = board.play(2, 0, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
+
     win = board.play(2, 2, player_X);
     assert(!win);
+    assert(!board.win_check(player_X));
+
     win = board.play(1, 0, player_O);
     assert(win);
+    assert(board.win_check(player_O));
+
     cout << board << endl;
 }
 
@@ -154,16 +190,27 @@ void test_hexboard_win_2(void)
 
     win = board.play(1, 1, player_X);
     assert(!win);
+    assert(!board.win_check(player_X));
+
     win = board.play(0, 0, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
+
     win = board.play(1, 2, player_X);
     assert(!win);
+    assert(!board.win_check(player_X));
+
     win = board.play(0, 1, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
+
     win = board.play(1, 0, player_X);
     assert(win);
+    assert(board.win_check(player_X));
+
     win = board.play(0, 2, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
 }
 
 void test_hexboard_win_3(void)
@@ -175,10 +222,17 @@ void test_hexboard_win_3(void)
 
     win = board.play(0, 0, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
+
     win = board.play(1, 0, player_X);
     assert(!win);
+    assert(!board.win_check(player_X));
+
     win = board.play(0, 1, player_O);
     assert(!win);
+    assert(!board.win_check(player_O));
+
     win = board.play(1, 1, player_X);
     assert(win);
+    assert(board.win_check(player_X));
 }

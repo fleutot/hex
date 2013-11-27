@@ -17,11 +17,19 @@ class HexBoard {
 public:
     HexBoard(unsigned size);
 
-    // Play a move, returns false if the move was unauthorized.
+    // Play a move, returns true if the game was won.
     bool play(const unsigned col, const unsigned row, const Player player);
     bool play(const pair<unsigned, unsigned> coord, const Player player) {
         return play(coord.first, coord.second, player);
     }
+
+    // Place a move but do not check for win.
+    void place(const unsigned col, const unsigned row, const Player player);
+    void place(const pair<unsigned, unsigned> coord, const Player player) {
+        return place(coord.first, coord.second, player);
+    }
+
+    bool win_check(const Player player);
 
     // Return a list of all unoccupied slots.
     const vector< pair<unsigned, unsigned> >& unoccupied_list_get() const {
@@ -36,6 +44,8 @@ public:
         // map is a vector of rows.
         return occupied_map[row][col].is_player();
     }
+
+    vector<int> occupied_list_get(const Player player);
 
     friend ostream& operator<< (ostream& os, const HexBoard& h);
     // Print the intermediate row that shows links between the positions of
@@ -96,6 +106,9 @@ protected:
         row = lin / size;
         col = lin % size;
     }
+
+    // Recursive path search used by win_check().
+    bool win_search_recursive(const int node, vector<int>& unvisited);
 
     // Update the player's forest of trees with the newly played position col,
     // row. Return the index of the newly updated tree.

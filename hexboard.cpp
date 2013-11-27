@@ -5,6 +5,7 @@ Implementation of a hex board
 #include <cctype>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #include "hexboard.hpp"
 #include "graph.hpp"
@@ -126,6 +127,70 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
     player_select(player);
     unsigned new_tree_index = update_trees(col, row);
     return connected_in_tree_check(side_a, side_b, new_tree_index);
+}
+
+void HexBoard::place(const unsigned col, const unsigned row, const Player player)
+{
+    // order of row and col here inverted, occupied_map is a vector of rows.
+    occupied_map[row][col] = player;
+    auto it = find(unoccupied_list.begin(), unoccupied_list.end(),
+                   make_pair(col, row));
+    unoccupied_list.erase(it);
+}
+
+bool HexBoard::win_check(const Player player)
+{
+    player_select(player);
+
+    vector<int> unvisited = occupied_list_get(player);
+    unvisited.push_back(side_b);    // Target board rim.
+    unsigned node = side_a; // Start at a board rim.
+    return win_search_recursive(node, unvisited);
+}
+
+bool HexBoard::win_search_recursive(const int node, vector<int>& unvisited)
+{
+    vector<int> neighbors = board.neighbors_get(node);
+    vector<int> player_neighbors;
+
+    for (unsigned i = 0; i < unvisited.size(); ++i) {
+        if (find(neighbors.begin(), neighbors.end(), unvisited[i])
+            != neighbors.end()) {
+            player_neighbors.push_back(unvisited[i]);
+            if (unvisited[i] == side_b) {
+                // The other side was reached.
+                return true;
+            }
+            // This neighbor was visited, do not test is again.
+            unvisited.erase(unvisited.begin() + i);
+            // Since the current element was erased, keep looking here.
+            --i;
+            if (unvisited.size() == 0) {
+                // No more nodes to reach.
+                return false;
+            }
+        }
+    }
+
+    for (auto n: player_neighbors) {
+        if (win_search_recursive(n, unvisited)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+vector<int> HexBoard::occupied_list_get(const Player player)
+{
+    vector<int> player_nodes;
+    for (unsigned row = 0; row < size; ++row) {
+        for (unsigned col = 0; col < size; ++col) {
+            if (occupied_map[row][col] == player) {
+                player_nodes.push_back(coord2lin(col, row));
+            }
+        }
+    }
+    return player_nodes;
 }
 
 void HexBoard::player_select(const Player player)
