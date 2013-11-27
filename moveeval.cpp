@@ -11,7 +11,7 @@ hexboardeval.cpp
 
 using namespace std;
 
-static const unsigned max_simulations_per_test_move = 1000U;
+static const unsigned max_simulations_per_test_move = 1000u;
 
 pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
 {
@@ -23,6 +23,8 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
     if (nb_simulations_per_move > max_simulations_per_test_move) {
         nb_simulations_per_move = max_simulations_per_test_move;
     }
+    cout << " (" << nb_simulations_per_move << " simulations per tested move)"
+         << flush;
 
     for (auto test_coord: free_slots) {
         // Run all the simulations with this test move first, keeping track of
@@ -36,11 +38,11 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
                 // No need to run a simulation, this is the best move, winning.
                 return test_coord;
             }
-            // Now play all other positions randomly until there is a win.
+            // Now play all other positions randomly until the board is full.
             // The first random move after the test position is done by the
             // other player.
-            win = random_play_until_win(test_board, tested_player);
-            if (win) {
+            test_board.fill_up(tested_player.other());
+            if (test_board.win_check(tested_player)) {
                 ++score;
             }
         }
@@ -51,27 +53,3 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
     }
     return best_coord;
 }
-
-// Parameter "player" must be the last player to have played, since it will be
-// swapped to the other player before making the next move.
-bool MoveEvaluator::random_play_until_win(HexBoard& test_board, Player player)
-{
-    vector< pair<unsigned, unsigned> > free_pos
-        = test_board.unoccupied_list_get();
-
-    // Order the future moves randomly.
-    random_shuffle(free_pos.begin(), free_pos.end());
-
-    bool win;
-    do {
-        pair<unsigned, unsigned> next_move = free_pos.back();
-        free_pos.pop_back();
-        player.swap();
-        win = test_board.play(next_move, player);
-    } while (!win);
-
-    // Return true if the winner of the random moves was the player we were
-    // testing for.
-    return player == tested_player;
-}
-

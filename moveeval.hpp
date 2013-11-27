@@ -20,7 +20,7 @@ public:
     // number of free positions, evaluate all free positions.
     MoveEvaluator(HexBoard& base_board,
                   const Player current_player,
-                  const unsigned nb_simulations = 20000,
+                  const unsigned nb_simulations = 100000,
                   const unsigned max_test_moves = UINT_MAX):
         real_board(base_board),
         tested_player(current_player),
@@ -37,8 +37,6 @@ public:
     pair<unsigned, unsigned> best_move_calculate();
 
 protected:
-    bool random_play_until_win(HexBoard& test_board, Player player);
-
     HexBoard& real_board;
 
     const Player tested_player;

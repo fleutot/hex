@@ -129,6 +129,7 @@ void HexGame::ai_input_get(pair<unsigned, unsigned>& move)
 
     MoveEvaluator evaluator(board, current_player);
     move = evaluator.best_move_calculate();
+    cout << " -> ";
     move_print(move);
     cout << endl;
 

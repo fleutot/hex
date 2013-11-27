@@ -130,7 +130,8 @@ void HexBoard::fill_up(Player player)
 
     // If the number of free position is not even, first_player is the one to
     // play once more than the other. This is solved with integer division,
-    // which truncates downwards, and starting with the other player.
+    // (which truncates downwards if not even) and starting with the other
+    // player.
     player.swap();
     unsigned i;
     for (i = 0; i < free_pos.size() / 2; ++i) {

@@ -26,7 +26,9 @@ ostream& operator<<(ostream& os, const Player& player)
     } else if (player.get() == player_e::O) {
         os << "O";
     } else {
-        cerr << __func__ << ": error in player input variable." << endl;
+        cerr << __func__ << ": error in player input variable: " << player.get()
+             << endl;
+        exit(1);
     }
     return os;
 }
