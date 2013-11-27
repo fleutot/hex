@@ -77,8 +77,6 @@ void test_hexboard_play(void)
     HexBoard board(3);
 
     board.play(1, 1, player_O);
-    //cout << board << endl;
-    assert(board.nb_trees_get(player_O) == 1 + 2); // includes virtual nodes.
     cout << board << endl << endl;
 
     cout << "One unauthorized move: " << endl;
@@ -90,19 +88,6 @@ void test_hexboard_play(void)
     cout << "Two unauthorized moves: " << endl;
     assert(!board.play(1, 3, player_O));
     assert(!board.play(3, 1, player_O));
-
-    // Check if trees seem correct so far, after erroneous play.
-    assert(board.nb_trees_get(player_O) == 1 + 2); // with virtual nodes.
-    assert(board.nb_trees_get(player_X) == 0 + 2); // with virtual nodes.
-
-    // Test merging two separate trees into one.
-    board.play(0, 1, player_X);
-    assert(board.nb_trees_get(player_X) == 1 + 2); // with virtual nodes.
-    board.play(0, 2, player_X);
-    assert(board.nb_trees_get(player_X) == 2); // one virtual now connected
-
-    board.play(0, 0, player_X);
-    assert(board.nb_trees_get(player_X) == 1);
 }
 
 void test_hexboard_unoccupied_list_get()

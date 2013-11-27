@@ -55,10 +55,6 @@ public:
 
     // Implemented for automated test purposes (see unit tests).
     bool sanity_check();
-    int nb_trees_get(const Player player) {
-        player_select(player);
-        return trees->size();
-    }
 
 protected:
     unsigned size;
@@ -81,13 +77,6 @@ protected:
     // compute it many times when running an AI on the board.
     vector< pair<unsigned, unsigned> > unoccupied_list;
 
-    // Collection of trees formed by each players' play.
-    vector< vector<int> > trees_O;
-    vector< vector<int> > trees_X;
-
-    // Used to point to trees_O or trees_X, depending on the current player.
-    vector< vector<int> > *trees = &trees_O;
-
     // Indeces to the winning board sides (virtual nodes) of the current player.
     int side_a, side_b;
 
@@ -109,23 +98,6 @@ protected:
 
     // Recursive path search used by win_check().
     bool win_search_recursive(const int node, vector<int>& unvisited);
-
-    // Update the player's forest of trees with the newly played position col,
-    // row. Return the index of the newly updated tree.
-    unsigned update_trees(const unsigned col, const unsigned row);
-
-    // If there is one, find the index of the tree in the given forest, which
-    // contains the vertex passed as first parameter.
-    // Return false if no tree was found, true otherwise.
-    bool containing_tree_get(const int vertex_name, unsigned& found_tree_index);
-
-    // Merge two trees into one, if not the same. One of the trees is destroyed
-    // as a result of the merge.
-    unsigned trees_merge(unsigned index_a, unsigned index_b);
-
-    // Check if two nodes are connected in the tree passed as parameter.
-    bool connected_in_tree_check(const int node_a, const int node_b,
-                                 const unsigned tree_index);
 };
 
 ostream& operator<< (ostream& os, const HexBoard& h);

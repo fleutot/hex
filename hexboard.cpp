@@ -76,15 +76,6 @@ HexBoard::HexBoard(unsigned size): size(size),
         board->edge_add(south, coord2lin(i, size - 1));
     }
 
-    // Add virtual nodes to the players' trees.
-    trees_X.resize(2);
-    trees_X[0].push_back(north);
-    trees_X[1].push_back(south);
-
-    trees_O.resize(2);
-    trees_O[0].push_back(west);
-    trees_O[1].push_back(east);
-
     // All slots are unoccupied to start with.
     unoccupied_list.reserve(size * size);
     for (unsigned row = 0; row < size; ++row) {
@@ -117,16 +108,8 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
         cout << endl;
         return false;
     }
-
-    // order of row and col here inverted, occupied_map is a vector of rows.
-    occupied_map[row][col] = player;
-    auto it = find(unoccupied_list.begin(), unoccupied_list.end(),
-                   make_pair(col, row));
-    unoccupied_list.erase(it);
-
-    player_select(player);
-    unsigned new_tree_index = update_trees(col, row);
-    return connected_in_tree_check(side_a, side_b, new_tree_index);
+    place(col, row, player);
+    return win_check(player);
 }
 
 void HexBoard::place(const unsigned col, const unsigned row, const Player player)
@@ -150,7 +133,7 @@ bool HexBoard::win_check(const Player player)
 
 bool HexBoard::win_search_recursive(const int node, vector<int>& unvisited)
 {
-    vector<int> neighbors = board.neighbors_get(node);
+    vector<int> neighbors = board->neighbors_get(node);
     vector<int> player_neighbors;
 
     for (unsigned i = 0; i < unvisited.size(); ++i) {
@@ -196,95 +179,15 @@ vector<int> HexBoard::occupied_list_get(const Player player)
 void HexBoard::player_select(const Player player)
 {
     if (player.get() == player_e::O) {
-        trees = &trees_O;
-        side_a = west;
-        side_b = east;
+        side_a = east;
+        side_b = west;
     } else if (player.get() == player_e::X) {
-        trees = &trees_X;
         side_a = north;
         side_b = south;
     } else {
         cerr << __func__ << ": undefined player." << endl;
         exit(1);
     }
-}
-
-unsigned HexBoard::update_trees(const unsigned col, const unsigned row)
-{
-    unsigned vertex_name = coord2lin(col, row);
-
-    // Add the node as a new tree.
-    unsigned new_tree_index = trees->size();
-    trees->resize(new_tree_index + 1);
-    (*trees)[new_tree_index].push_back(vertex_name);
-
-    // Check if neighbors are already in trees, and merge in that case.
-    vector<int> neighbors = board->neighbors_get(vertex_name);
-    for (auto it = neighbors.begin(); it != neighbors.end(); ++it) {
-        unsigned neighbor_tree_index;
-        if (containing_tree_get(*it, neighbor_tree_index)) {
-            new_tree_index = trees_merge(neighbor_tree_index, new_tree_index);
-        }
-    }
-    return new_tree_index;
-}
-
-bool HexBoard::containing_tree_get(const int vertex_name,
-                                   unsigned& found_tree_index)
-{
-    for (unsigned i = 0; i < trees->size(); ++i) {
-        auto found_it = find((*trees)[i].begin(), (*trees)[i].end(),
-                             vertex_name);
-        if (found_it != (*trees)[i].end()) {
-            found_tree_index = i;
-            return true;
-        }
-    }
-    return false;
-}
-
-// Merge a and b together, return the index of the merged tree.
-unsigned HexBoard::trees_merge(unsigned index_a, unsigned index_b)
-{
-    if (index_a == index_b) {
-        return index_a;
-    }
-
-    vector< vector<int> >& forest = *trees;  // for readability.
-
-    // Make sure to merge the shorter tree into the longer one. This function
-    // was profiled to take much time, hence this optimization.
-    if (forest[index_a].size() < forest[index_b].size()) {
-        unsigned temp = index_a;
-        index_a = index_b;
-        index_b = temp;
-    }
-
-    forest[index_a].reserve(forest[index_a].size() + forest[index_b].size());
-    forest[index_a].insert(forest[index_a].end(),
-                           forest[index_b].begin(), forest[index_b].end());
-
-    forest.erase(forest.begin() + index_b);
-    if (index_a > index_b) {
-        // The erased tree was before index_a, update the index.
-        --index_a;
-    }
-    return index_a;
-}
-
-bool HexBoard::connected_in_tree_check(const int node_a, const int node_b,
-                                       const unsigned tree_index)
-{
-    bool a_found = false;
-    bool b_found = false;
-    for (auto vertex: (*trees)[tree_index]) {
-        if (node_a == vertex) {
-            a_found = true;
-        } else if (node_b == vertex) {
-            b_found = true;
-        }
-    }
-    return a_found && b_found;
 }
 
 ostream& operator<< (ostream& os, const HexBoard& board)
