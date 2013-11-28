@@ -15,6 +15,11 @@ using namespace std;
 
 const int nb_players = 2;
 
+template<class T>
+static void intersect_and_remove(vector<T>& a, vector<T>& b, vector<T>& r);
+
+// 4 extra virtual nodes for the board, representing the edges. These were added
+// to ease checking for winning condition.
 HexBoard::HexBoard(unsigned size): size(size),
                                    west(size * size), east(size * size + 1),
                                    north(size * size + 2), south(size * size +3)
@@ -141,6 +146,7 @@ void HexBoard::fill_up(Player player)
     for (; i < free_pos.size(); ++i) {
         occupied_map[free_pos[i].second][free_pos[i].first] = player;
     }
+    unoccupied_list.clear();
 }
 
 bool HexBoard::win_check(const Player player)
@@ -148,6 +154,8 @@ bool HexBoard::win_check(const Player player)
     player_select(player);
 
     vector<int> unvisited = occupied_list_get(player);
+    sort(unvisited.begin(), unvisited.end());   // for easier intersection
+
     unsigned node = side_a; // Start board rim.
     unvisited.push_back(side_b);    // Target board rim.
     return win_search_recursive(node, unvisited);
@@ -158,30 +166,23 @@ bool HexBoard::win_search_recursive(const int node, vector<int>& unvisited)
     vector<int> neighbors = board->neighbors_get(node);
     vector<int> player_neighbors;
 
-    for (unsigned i = 0; i < unvisited.size(); ++i) {
-        if (find(neighbors.begin(), neighbors.end(), unvisited[i])
-            != neighbors.end()) {
-            player_neighbors.push_back(unvisited[i]);
-            if (unvisited[i] == side_b) {
-                // The other side was reached.
-                return true;
-            }
-            // This neighbor was visited, do not test is again.
-            unvisited.erase(unvisited.begin() + i);
-            // Since the current element was erased, keep looking here.
-            --i;
-            if (unvisited.size() == 0) {
-                // No more nodes to reach.
-                return false;
-            }
-        }
-    }
+    sort(neighbors.begin(), neighbors.end());
+    // Put in player_neighbors only elements that are both in neighbors and
+    // unvisited. Remove from unvisited the elements of neighbors.
+    intersect_and_remove(neighbors, unvisited, player_neighbors);
 
     for (auto n: player_neighbors) {
+        if (n == side_b) {
+            return true;    // Target rim reached.
+        }
         if (win_search_recursive(n, unvisited)) {
             return true;
         }
     }
+    if (unvisited.size() == 0) {
+        return false;
+    }
+
     return false;
 }
 
@@ -282,4 +283,26 @@ void HexBoard::slanted_links_row_print(ostream& os, const unsigned slot_width,
 void move_print(const pair<unsigned, unsigned> move)
 {
     cout << static_cast<char>(move.first + 'A') << move.second + 1;
+}
+
+// Put in r the elements that are both in a and b.
+// Remove from b the elements of a.
+// a and b must be sorted.
+// r should normally be empty.
+template<class T>
+static void intersect_and_remove(vector<T>& a, vector<T>& b, vector<T>& r)
+{
+    auto a_it = a.begin();
+    auto b_it = b.begin();
+
+    while ((a_it != a.end()) && (b_it != b.end())) {
+        if (*a_it < *b_it) {
+            ++a_it;
+        } else if (*a_it > *b_it) {
+            ++b_it;
+        } else {    // equal
+            r.push_back(*a_it);
+            b.erase(b_it);
+        }
+    }
 }

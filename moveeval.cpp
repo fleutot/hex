@@ -15,7 +15,7 @@ static const unsigned max_simulations_per_test_move = 1000u;
 
 pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
 {
-    const vector< pair<unsigned, unsigned> > free_slots
+    const vector< pair<unsigned, unsigned> >& free_slots
                   = real_board.unoccupied_list_get();
 
     unsigned nb_simulations_per_move = nb_total_simulations
