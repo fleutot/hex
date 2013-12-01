@@ -18,7 +18,7 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
     const vector< pair<unsigned, unsigned> > free_slots
                   = real_board.unoccupied_list_get();
 
-    const unsigned nb_simulations_per_move = nb_total_simulations
+    unsigned nb_simulations_per_move = nb_total_simulations
             / free_slots.size();
     if (nb_simulations_per_move > max_simulations_per_test_move) {
         nb_simulations_per_move = max_simulations_per_test_move;

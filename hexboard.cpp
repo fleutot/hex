@@ -20,8 +20,7 @@ HexBoard::HexBoard(unsigned size): size(size),
 {
     // 4 extra virtual nodes for the board, representing the rims. These were
     // added to ease checking for winning condition.
-    board = new Graph(size * size + 4);
-    nb_refs_to_board = new unsigned(1);
+    board = make_shared<Graph>(size * size + 4);
 
     occupied_map.resize(size);
     for (auto it = occupied_map.begin(); it != occupied_map.end(); ++it) {
@@ -91,28 +90,6 @@ HexBoard::HexBoard(unsigned size): size(size),
         for (unsigned col = 0; col < size; ++col) {
             unoccupied_list.push_back(make_pair(col, row));
         }
-    }
-}
-
-HexBoard::HexBoard(HexBoard& origin):
-    size(origin.size), board(origin.board),
-    nb_refs_to_board(origin.nb_refs_to_board), west(origin.west),
-    east(origin.east), north(origin.north), south(origin.south),
-    occupied_map(origin.occupied_map),
-    unoccupied_list(origin.unoccupied_list), trees_O(origin.trees_O),
-    trees_X(origin.trees_X), trees(origin.trees), side_a(origin.side_a),
-    side_b(origin.side_b)
-{
-    origin.refs_to_board_increment();
-}
-
-HexBoard::~HexBoard()
-{
-    unsigned refs_left = refs_to_board_decrement();
-
-    if (refs_left == 0) {
-        delete board;
-        delete nb_refs_to_board;
     }
 }
 
