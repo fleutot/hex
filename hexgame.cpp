@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 Hex game class implementation
 ------------------------------------------------------------------------------*/
-
+#include <chrono>
 #include <iostream>
 #include <utility> // pair
 
@@ -121,10 +121,18 @@ bool HexGame::human_input_get(pair<unsigned, unsigned>& move)
 void HexGame::ai_input_get(pair<unsigned, unsigned>& move)
 {
     cout << "thinking... " << flush;
+
+    chrono::time_point<chrono::system_clock> start, end;
+    start = chrono::system_clock::now();
+
     MoveEvaluator evaluator(board, current_player);
     move = evaluator.best_move_calculate();
     move_print(move);
     cout << endl;
+
+    end = chrono::system_clock::now();
+    chrono::duration<double> elapsed_seconds = end - start;
+    cout << "Elapsed time: " << elapsed_seconds.count() << " s" << endl;
 }
 
 bool HexGame::char_to_player_type_set(const char c, PlayerType& type)
