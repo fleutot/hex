@@ -138,6 +138,33 @@ void HexBoard::unplace(const unsigned col, const unsigned row)
 }
 
 //  ----------------------------------------------------------------------------
+/// \brief  Fill up the rest of the board randomly.
+/// \param  The first player to place a stone.
+//  ----------------------------------------------------------------------------
+void HexBoard::fill_up(Player player)
+{
+    vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
+
+    // Order the future moves randomly.
+    shuffle(free_pos.begin(), free_pos.end(), random_engine);
+
+    // If the number of free position is not even, first_player is the one to
+    // play once more than the other. This is solved with integer division,
+    // (which truncates downwards if not even) and starting with the other
+    // player.
+    player.swap();
+    unsigned i;
+    for (i = 0; i < free_pos.size() / 2; ++i) {
+        occupied_map[free_pos[i].second][free_pos[i].first] = player;
+    }
+    player.swap();
+    for (; i < free_pos.size(); ++i) {
+        occupied_map[free_pos[i].second][free_pos[i].first] = player;
+    }
+    unoccupied_list.clear();
+}
+
+//  ----------------------------------------------------------------------------
 /// \brief  Fill up the half the board randomly with one player's stones, and
 /// check if that player won. The resulting board is not one that could be
 /// reached in a real game, so this hexboard is not very usable after this

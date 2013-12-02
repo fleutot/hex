@@ -43,6 +43,7 @@ public:
     // The unoccupied member has been shuffled, but its content has not been
     // otherwise changed.
     bool fill_up_half_and_win_check(Player player);
+    void fill_up(const Player first_player);
 
     bool win_check(const Player player);
 

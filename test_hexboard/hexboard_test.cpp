@@ -126,7 +126,8 @@ void test_hexboard_occupied_list_get()
     board.play(2, 2, player_O);
     board.play(2, 1, player_X);
 
-    vector<int> occupied_O = board.occupied_list_get(player_O);
+    vector<int> occupied_O;
+    board.occupied_list_get(player_O, occupied_O);
 
     int expected[] = {1, 2, 3, 8};
 
@@ -145,10 +146,12 @@ void test_hexboard_fill_up()
         HexBoard board(3);
         board.fill_up(player_O);
 
-        vector<int> occupied_O = board.occupied_list_get(player_O);
+        vector<int> occupied_O;
+        board.occupied_list_get(player_O, occupied_O);
         assert(occupied_O.size() == 5);
 
-        vector<int> occupied_X = board.occupied_list_get(player_X);
+        vector<int> occupied_X;
+        board.occupied_list_get(player_X, occupied_X);
         assert(occupied_X.size() == 4);
     }
 
@@ -156,10 +159,12 @@ void test_hexboard_fill_up()
         HexBoard board(3);
         board.fill_up(player_X);
 
-        vector<int> occupied_O = board.occupied_list_get(player_O);
+        vector<int> occupied_O;
+        board.occupied_list_get(player_O, occupied_O);
         assert(occupied_O.size() == 4);
 
-        vector<int> occupied_X = board.occupied_list_get(player_X);
+        vector<int> occupied_X;
+        board.occupied_list_get(player_X, occupied_X);
         assert(occupied_X.size() == 5);
     }
 
@@ -169,10 +174,12 @@ void test_hexboard_fill_up()
 
         board.fill_up(player_X);
 
-        vector<int> occupied_O = board.occupied_list_get(player_O);
+        vector<int> occupied_O;
+        board.occupied_list_get(player_O, occupied_O);
         assert(occupied_O.size() == 5);
 
-        vector<int> occupied_X = board.occupied_list_get(player_X);
+        vector<int> occupied_X;
+        board.occupied_list_get(player_X, occupied_X);
         assert(occupied_X.size() == 4);
     }
 }
@@ -272,8 +279,7 @@ void test_hexboard_occupied_save_restore()
     board.play(0, 2, player_O);
     board.play(1, 1, player_O);
 
-    vector< vector<Player> > occupied_backup;
-    board.occupied_save(occupied_backup);
+    vector< vector<Player> > occupied_backup = board.occupied_save();
     board.play(2, 0, player_O);
     assert(board.win_check(player_O));
 
