@@ -32,6 +32,7 @@ void test_hexboard_fill_up();
 void test_hexboard_win_1(void);
 void test_hexboard_win_2(void);
 void test_hexboard_win_3(void);
+void test_hexboard_occupied_save_restore();
 
 int main(void)
 {
@@ -47,6 +48,7 @@ int main(void)
     test_hexboard_win_1();
     test_hexboard_win_2();
     test_hexboard_win_3();
+    test_hexboard_occupied_save_restore();
     cout << "All tested passed (but user check needed!)." << endl;
     return 0;
 }
@@ -261,4 +263,22 @@ void test_hexboard_win_3(void)
     win = board.play(1, 1, player_X);
     assert(win);
     assert(board.win_check(player_X));
+}
+
+void test_hexboard_occupied_save_restore()
+{
+    cout << __func__ << endl;
+    HexBoard board(3);
+    board.play(0, 2, player_O);
+    board.play(1, 1, player_O);
+
+    vector< vector<Player> > occupied_backup;
+    board.occupied_save(occupied_backup);
+    board.play(2, 0, player_O);
+    assert(board.win_check(player_O));
+
+    board.occupied_restore(occupied_backup);
+    assert(!board.win_check(player_O));
+    board.play(2, 1, player_O);
+    assert(board.win_check(player_O));
 }

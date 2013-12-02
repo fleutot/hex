@@ -126,6 +126,16 @@ void HexBoard::place(const unsigned col, const unsigned row, const Player player
     unoccupied_list.erase(it);
 }
 
+void HexBoard::unplace(const unsigned col, const unsigned row)
+{
+    occupied_map[row][col].set(player_e::NONE);
+    unoccupied_list.push_back(make_pair(col, row));
+}
+
+//  ----------------------------------------------------------------------------
+/// \brief  Fill up the rest of the board randomly.
+/// \param  The first player to place a stone.
+//  ----------------------------------------------------------------------------
 void HexBoard::fill_up(Player player)
 {
     vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();

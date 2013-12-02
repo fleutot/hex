@@ -29,9 +29,23 @@ public:
         return place(coord.first, coord.second, player);
     }
 
+    void unplace(const unsigned col, const unsigned row);
+    void unplace(const pair<unsigned, unsigned> coord) {
+        unplace(coord.first, coord.second);
+    }
+
     bool fill_up_half_and_win_check(Player player);
     void fill_up(const Player first_player);
     bool win_check(const Player player);
+
+    void occupied_save(vector< vector<Player> >& dst) {
+        dst = occupied_map;
+    }
+
+    void occupied_restore(vector< vector<Player> >& src) {
+        occupied_map = src;
+    }
+
 
     // Return a list of all unoccupied slots.
     vector< pair<unsigned, unsigned> >& unoccupied_list_get() {
