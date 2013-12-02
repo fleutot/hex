@@ -1,7 +1,7 @@
 CC = g++
 CFLAGS = -Wall -Werror -O3 -std=c++11 -ggdb
 
-SRC = ../graph.cpp ../hexboard.cpp ../moveeval.cpp moveeval_test.cpp
+SRC = ../graph.cpp ../hexboard.cpp ../moveeval.cpp ../player.cpp moveeval_test.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = moveeval_test
 
