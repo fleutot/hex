@@ -12,20 +12,20 @@ moveeval.hpp
 class MoveEvaluator {
 public:
     // parameters:
-    // base_board: the board with moves that are actually played (as opposed to
-    // only under test).
-    // nb_simulations: max number of simulations to run (~ nb test moves * nb
+    // base_board: the board with moves that are actually played.
+    // current_player: next player to place a stone.
+    // max_nb_simulations: max number of simulations to run (~ nb test moves * nb
     // simulations per move).
-    // max_test_moves: max number of test moves to evaluate. If larger than the
-    // number of free positions, evaluate all free positions.
+    // max_nb_simulations_per_test: max number of Monte-Carlo to run per test
+    // move.
     MoveEvaluator(HexBoard& base_board,
                   const Player current_player,
-                  const unsigned nb_simulations = 100000,
-                  const unsigned max_test_moves = UINT_MAX):
-        real_board(base_board),
+                  const unsigned max_nb_simulations = 100000u,
+                  const unsigned max_nb_simulations_per_test = 2000u):
+        board(base_board),
         tested_player(current_player),
-        nb_test_moves(max_test_moves),
-        nb_total_simulations(nb_simulations),
+        max_nb_total_simulations(max_nb_simulations),
+        max_nb_simulations_per_test(max_nb_simulations_per_test),
         best_score(-1)
     {
         // Init to nonsense value.
@@ -37,16 +37,16 @@ public:
     pair<unsigned, unsigned> best_move_calculate();
 
 protected:
-    HexBoard& real_board;
+    HexBoard& board;
 
     const Player tested_player;
-    // The number of next moves to evaluate. If larger than the number of free
-    // positions, test all free positions.
-    unsigned nb_test_moves;
+
     // Max total number of simualtions that can be run, all test moves times the
     // number of simulations per test move. This is done to limit the time spent
     // evaluating the best move.
-    unsigned nb_total_simulations;
+    unsigned max_nb_total_simulations;
+
+    unsigned max_nb_simulations_per_test;
 
     int best_score;
     pair<unsigned, unsigned> best_coord;

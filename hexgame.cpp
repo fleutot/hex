@@ -59,12 +59,11 @@ bool HexGame::next_prompt_and_play()
         if (current_player_type_get() == PlayerType::HUMAN) {
             valid_move = human_input_get(move);
         } else if (current_player_type_get() == PlayerType::AI) {
-            ai_input_get(move);
-            valid_move = true;  // Assume the AI only gives valid moves.
+            valid_move = ai_input_get(move);
         }
     } while (!valid_move);
 
-    bool win = board.play(move.first, move.second, current_player);
+    bool win = board.play(move, current_player);
 
     if (win) {
         winner = current_player;
@@ -120,7 +119,7 @@ bool HexGame::human_input_get(pair<unsigned, unsigned>& move)
     return true;
 }
 
-void HexGame::ai_input_get(pair<unsigned, unsigned>& move)
+bool HexGame::ai_input_get(pair<unsigned, unsigned>& move)
 {
     cout << "thinking... " << flush;
 
@@ -136,6 +135,8 @@ void HexGame::ai_input_get(pair<unsigned, unsigned>& move)
     end = chrono::system_clock::now();
     chrono::duration<double> elapsed_seconds = end - start;
     cout << "Elapsed time: " << elapsed_seconds.count() << " s" << endl;
+
+    return true;    // The AI only gives valid moves.
 }
 
 bool HexGame::char_to_player_type_set(const char c, PlayerType& type)

@@ -10,7 +10,7 @@ using namespace std;
 
 ostream& operator<<(ostream& os, const Player& player)
 {
-    // This commented implementation is not supported by g++, who says:
+    // This commented implementation is not supported by g++ 4.7, who says:
     // "sorry, unimplemented: non-trivial designated initializers not supported"
     // static const char player2char[] = {
     //     [player_e::NONE]    = '.',

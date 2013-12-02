@@ -4,14 +4,13 @@ Implementation of a hex board
 #ifndef HEXBOARD_HPP_INCLUDED
 #define HEXBOARD_HPP_INCLUDED
 
-#include <chrono>
 #include <memory>
 #include <random>
 #include <vector>
 #include "graph.hpp"
 #include "player.hpp"
 
-using namespace std;
+using std::vector;
 
 extern const int nb_players;
 
@@ -31,25 +30,33 @@ public:
         return place(coord.first, coord.second, player);
     }
 
+    // Remove a stone at the given position. Requires that a stone actually is
+    // at the given position.
     void unplace(const unsigned col, const unsigned row);
     void unplace(const pair<unsigned, unsigned> coord) {
         unplace(coord.first, coord.second);
     }
 
+    // Destructive. Once this function is called, the content of the member
+    // variable occupied_map is not valid. Use the function occupied_save and
+    // occupied_restore to revert to a known state.
+    // The unoccupied member has been shuffled, but its content has not been
+    // otherwise changed.
     bool fill_up_half_and_win_check(Player player);
-    void fill_up(const Player first_player);
+
     bool win_check(const Player player);
 
-    void occupied_save(vector< vector<Player> >& dst) {
-        dst = occupied_map;
+    vector< vector<Player> >& occupied_save() {
+        return occupied_map;
     }
 
     void occupied_restore(vector< vector<Player> >& src) {
         occupied_map = src;
     }
 
-
-    // Return a list of all unoccupied slots.
+    // Return a list of all unoccupied slots. The reference may modify the
+    // content of the class member! This is a bit dangerous, but gives a
+    // significant optimization opportunity.
     vector< pair<unsigned, unsigned> >& unoccupied_list_get() {
         return unoccupied_list;
     }
@@ -63,7 +70,7 @@ public:
         return occupied_map[row][col].is_player();
     }
 
-    vector<int> occupied_list_get(const Player player);
+    void occupied_list_get(const Player player, vector<int>& list);
 
     friend ostream& operator<< (ostream& os, const HexBoard& h);
     // Print the intermediate row that shows links between the positions of

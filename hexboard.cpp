@@ -138,37 +138,10 @@ void HexBoard::unplace(const unsigned col, const unsigned row)
 }
 
 //  ----------------------------------------------------------------------------
-/// \brief  Fill up the rest of the board randomly.
-/// \param  The first player to place a stone.
-//  ----------------------------------------------------------------------------
-void HexBoard::fill_up(Player player)
-{
-    vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
-
-    // Order the future moves randomly.
-    shuffle(free_pos.begin(), free_pos.end(), random_engine);
-
-    // If the number of free position is not even, first_player is the one to
-    // play once more than the other. This is solved with integer division,
-    // (which truncates downwards if not even) and starting with the other
-    // player.
-    player.swap();
-    unsigned i;
-    for (i = 0; i < free_pos.size() / 2; ++i) {
-        occupied_map[free_pos[i].second][free_pos[i].first] = player;
-    }
-    player.swap();
-    for (; i < free_pos.size(); ++i) {
-        occupied_map[free_pos[i].second][free_pos[i].first] = player;
-    }
-    unoccupied_list.clear();
-}
-
-//  ----------------------------------------------------------------------------
 /// \brief  Fill up the half the board randomly with one player's stones, and
 /// check if that player won. The resulting board is not one that could be
 /// reached in a real game, so this hexboard is not very usable after this
-/// function. win_check() for example may not be used.
+/// function. win_check() for example may not be used directly.
 /// \param  The player that would be the next player.
 /// \return Win for that player.
 //  ----------------------------------------------------------------------------
@@ -184,8 +157,8 @@ bool HexBoard::fill_up_half_and_win_check(Player player)
     // (which truncates downwards if not even) and starting with the other
     // player.
     player.swap();
-    unsigned i;
-    for (i = 0; i < free_pos.size() / 2; ++i) {
+    for (unsigned i = 0; i < free_pos.size() / 2; ++i) {
+        // occupied_map is a vector of rows.
         occupied_map[free_pos[i].second][free_pos[i].first] = player;
     }
 
@@ -199,11 +172,12 @@ bool HexBoard::win_check(const Player player)
 {
     player_select(player);
 
-    vector<int> unvisited = occupied_list_get(player);
-    sort(unvisited.begin(), unvisited.end());   // for easier intersection
+    vector<int> unvisited;
+    occupied_list_get(player, unvisited);
+    unvisited.push_back(side_b);                // Target board rim.
+    sort(unvisited.begin(), unvisited.end());   // For easier intersection.
 
     unsigned node = side_a; // Start board rim.
-    unvisited.push_back(side_b);    // Target board rim.
     return win_search_recursive(node, unvisited);
 }
 
@@ -214,7 +188,8 @@ bool HexBoard::win_search_recursive(const int node, vector<int>& unvisited)
 
     sort(neighbors.begin(), neighbors.end());
     // Put in player_neighbors only elements that are both in neighbors and
-    // unvisited. Remove from unvisited the elements of neighbors.
+    // unvisited. Remove from unvisited the elements of neighbors. unvisited is
+    // still sorted after this function call.
     intersect_and_remove(neighbors, unvisited, player_neighbors);
 
     for (auto n: player_neighbors) {
@@ -232,17 +207,16 @@ bool HexBoard::win_search_recursive(const int node, vector<int>& unvisited)
     return false;
 }
 
-vector<int> HexBoard::occupied_list_get(const Player player)
+void HexBoard::occupied_list_get(const Player player, vector<int>& list)
 {
     vector<int> player_nodes;
     for (unsigned row = 0; row < size; ++row) {
         for (unsigned col = 0; col < size; ++col) {
             if (occupied_map[row][col] == player) {
-                player_nodes.push_back(coord2lin(col, row));
+                list.push_back(coord2lin(col, row));
             }
         }
     }
-    return player_nodes;
 }
 
 void HexBoard::player_select(const Player player)
@@ -257,6 +231,31 @@ void HexBoard::player_select(const Player player)
         cerr << __func__ << ": undefined player." << endl;
         exit(1);
     }
+}
+
+// -----------------------------------------------------------------------------
+// Print operations
+// -----------------------------------------------------------------------------
+
+void HexBoard::slanted_links_row_print(ostream& os, const unsigned slot_width,
+                                       const unsigned row_index) const
+{
+    // offset to make the row of links also slanted.
+    for (unsigned i = 0; i < row_index + 1; ++i) {
+        os << setw(slot_width / 2) << " ";
+    }
+    os << " ";  // Extra space to align in a slanted fashion to the slot above.
+
+    // Minus one, the last column is a special case.
+    for (unsigned i = 0; i < size - 1; ++i) {
+        os << setw(slot_width) << " \\ /";
+    }
+    os << " \\" << endl;
+}
+
+void move_print(const pair<unsigned, unsigned> move)
+{
+    cout << static_cast<char>(move.first + 'A') << move.second + 1;
 }
 
 ostream& operator<< (ostream& os, const HexBoard& board)
@@ -310,31 +309,14 @@ ostream& operator<< (ostream& os, const HexBoard& board)
     return os;
 }
 
-void HexBoard::slanted_links_row_print(ostream& os, const unsigned slot_width,
-                                       const unsigned row_index) const
-{
-    // offset to make the row of links also slanted.
-    for (unsigned i = 0; i < row_index + 1; ++i) {
-        os << setw(slot_width / 2) << " ";
-    }
-    os << " ";  // Extra space to align in a slanted fashion to the slot above.
-
-    // Minus one, the last column is a special case.
-    for (unsigned i = 0; i < size - 1; ++i) {
-        os << setw(slot_width) << " \\ /";
-    }
-    os << " \\" << endl;
-}
-
-void move_print(const pair<unsigned, unsigned> move)
-{
-    cout << static_cast<char>(move.first + 'A') << move.second + 1;
-}
+// -----------------------------------------------------------------------------
+// Local functions
+// -----------------------------------------------------------------------------
 
 // Put in r the elements that are both in a and b.
 // Remove from b the elements of a.
 // a and b must be sorted.
-// r should normally be empty.
+// r should normally be empty at start.
 template<class T>
 static void intersect_and_remove(vector<T>& a, vector<T>& b, vector<T>& r)
 {
