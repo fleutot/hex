@@ -128,7 +128,7 @@ void HexBoard::place(const unsigned col, const unsigned row, const Player player
 
 void HexBoard::fill_up(Player player)
 {
-    vector< pair<unsigned, unsigned> > free_pos = unoccupied_list_get();
+    vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
 
     // Order the future moves randomly.
     random_shuffle(free_pos.begin(), free_pos.end());
@@ -147,6 +147,37 @@ void HexBoard::fill_up(Player player)
         occupied_map[free_pos[i].second][free_pos[i].first] = player;
     }
     unoccupied_list.clear();
+}
+
+//  ----------------------------------------------------------------------------
+/// \brief  Fill up the half the board randomly with one player's stones, and
+/// check if that player won. The resulting board is not one that could be
+/// reached in a real game, so this hexboard is not very usable after this
+/// function. win_check() for example may not be used.
+/// \param  The player that would be the next player.
+/// \return Win for that player.
+//  ----------------------------------------------------------------------------
+bool HexBoard::fill_up_half_and_win_check(Player player)
+{
+    vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
+
+    // Order the future moves randomly.
+    random_shuffle(free_pos.begin(), free_pos.end());
+
+    // If the number of free position is not even, player is the one to
+    // play once more than the other. This is solved with integer division,
+    // (which truncates downwards if not even) and starting with the other
+    // player.
+    player.swap();
+    unsigned i;
+    for (i = 0; i < free_pos.size() / 2; ++i) {
+        occupied_map[free_pos[i].second][free_pos[i].first] = player;
+    }
+
+    // Only the moves of the other player were played. Since there is exatly one
+    // winner if the board if full, return true (win) if this *other* player did
+    // not win.
+    return !win_check(player);
 }
 
 bool HexBoard::win_check(const Player player)

@@ -11,7 +11,7 @@ hexboardeval.cpp
 
 using namespace std;
 
-static const unsigned max_simulations_per_test_move = 1000u;
+static const unsigned max_simulations_per_test_move = 2000u;
 
 pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
 {
@@ -41,8 +41,9 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
             // Now play all other positions randomly until the board is full.
             // The first random move after the test position is done by the
             // other player.
-            test_board.fill_up(tested_player.other());
-            if (test_board.win_check(tested_player)) {
+            bool other_win = test_board.fill_up_half_and_win_check(
+                tested_player.other());
+            if (!other_win) {
                 ++score;
             }
         }
