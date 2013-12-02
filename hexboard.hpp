@@ -4,7 +4,9 @@ Implementation of a hex board
 #ifndef HEXBOARD_HPP_INCLUDED
 #define HEXBOARD_HPP_INCLUDED
 
+#include <chrono>
 #include <memory>
+#include <random>
 #include <vector>
 #include "graph.hpp"
 #include "player.hpp"
@@ -95,6 +97,8 @@ protected:
 
     // Indeces to the winning board sides (virtual nodes) of the current player.
     int side_a, side_b;
+
+    mt19937 random_engine;
 
     // Update the variable trees to point to the correct trees_O or trees_X
     // depending on the current player.

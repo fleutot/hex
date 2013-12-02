@@ -14,8 +14,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    srand(time(0));
-
     const int max_width = 26u;
 
     if ((argc != 2) || (atoi(argv[1]) > max_width))  {

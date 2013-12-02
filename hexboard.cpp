@@ -2,6 +2,7 @@
 Implementation of a hex board
 ------------------------------------------------------------------------------*/
 #include <algorithm>
+#include <ctime>
 #include <cctype>
 #include <iostream>
 #include <iomanip>
@@ -24,6 +25,10 @@ HexBoard::HexBoard(unsigned size): size(size),
                                    west(size * size), east(size * size + 1),
                                    north(size * size + 2), south(size * size +3)
 {
+    // Seed only once, at object creation. This could lead to troubles if
+    // several boards were to be created within a second. Not a problem now.
+    random_engine.seed(time(0));
+
     // 4 extra virtual nodes for the board, representing the rims. These were
     // added to ease checking for winning condition.
     board = make_shared<Graph>(size * size + 4);
@@ -141,7 +146,7 @@ void HexBoard::fill_up(Player player)
     vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
 
     // Order the future moves randomly.
-    random_shuffle(free_pos.begin(), free_pos.end());
+    shuffle(free_pos.begin(), free_pos.end(), random_engine);
 
     // If the number of free position is not even, first_player is the one to
     // play once more than the other. This is solved with integer division,
@@ -172,7 +177,7 @@ bool HexBoard::fill_up_half_and_win_check(Player player)
     vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
 
     // Order the future moves randomly.
-    random_shuffle(free_pos.begin(), free_pos.end());
+    shuffle(free_pos.begin(), free_pos.end(), random_engine);
 
     // If the number of free position is not even, player is the one to
     // play once more than the other. This is solved with integer division,
