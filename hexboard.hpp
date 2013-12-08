@@ -39,8 +39,10 @@ public:
     }
 
     // Destructive. Once this function is called, the content of the member
-    // variable occupied_map is not valid. Use the function occupied_save and
-    // occupied_restore to revert to a known state.
+    // variable occupied_X or _O is not valid. Note the the destroyed map is
+    // that of thet *other* player than the one passed as parameter.
+    // Use the function occupied_save and occupied_restore to revert to a known
+    // state.
     // The unoccupied member has been shuffled, but its content has not been
     // otherwise changed.
     bool fill_up_half_and_win_check(Player player);
@@ -128,12 +130,16 @@ protected:
 
     // Update the variable trees to point to the correct trees_O or trees_X
     // depending on the current player.
-    void player_select(const Player player);
+    inline void player_select(const Player player);
 
     void occupied_set(unsigned col, unsigned row, Player player, int value = 1);
     void occupied_reset(unsigned col, unsigned row, Player player) {
         occupied_set(col, row, player, 0);
     }
+
+    void occupied_X_set(unsigned col, unsigned row);
+    void occupied_O_set(unsigned col, unsigned row);
+    void (HexBoard::*occupied_player_set)(unsigned, unsigned);
 
     // Convert a column and row pair to a linear index, which is used as a node
     // name in the graph.

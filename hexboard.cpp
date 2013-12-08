@@ -173,22 +173,21 @@ void HexBoard::fill_up(Player player)
 bool HexBoard::fill_up_half_and_win_check(Player player)
 {
     vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
-
     // Order the future moves randomly.
     shuffle(free_pos.begin(), free_pos.end(), random_engine);
 
-    // If the number of free position is not even, player is the one to
+    // If the number of free positions is not even, player is the one to
     // play once more than the other. This is solved with integer division,
     // (which truncates downwards if not even) and starting with the other
     // player.
     player.swap();
+    player_select(player);
     for (unsigned i = 0; i < free_pos.size() / 2; ++i) {
-        // occupied_map is a vector of rows.
-        occupied_map[free_pos[i].second][free_pos[i].first] = player;
+        (this->*occupied_player_set)(free_pos[i].first, free_pos[i].second);
     }
 
-    // Only the moves of the other player were played. Since there is exatly one
-    // winner if the board if full, return true (win) if this *other* player did
+    // Only the moves of the other player were played. Since there is exactly
+    // one winner if the board if full, return true (win) if this *other* player did
     // not win.
     return !win_check(player);
 }
@@ -240,14 +239,12 @@ void HexBoard::occupied_list_get(const Player player, vector<int>& list)
     }
 }
 
-void HexBoard::player_select(const Player player)
+inline void HexBoard::player_select(const Player player)
 {
     if (player.get() == player_e::O) {
-        side_a = east;
-        side_b = west;
+        HexBoard::occupied_player_set = &HexBoard::occupied_O_set;
     } else if (player.get() == player_e::X) {
-        side_a = north;
-        side_b = south;
+        HexBoard::occupied_player_set = &HexBoard::occupied_X_set;
     } else {
         cerr << __func__ << ": undefined player." << endl;
         exit(1);
@@ -280,6 +277,16 @@ void HexBoard::occupied_set(unsigned col, unsigned row, Player player,
             occupied_O[col] &= ~(1 << row);
         }
     }
+}
+
+inline void HexBoard::occupied_X_set(unsigned col, unsigned row)
+{
+    occupied_X[row] |= (1 << col);
+}
+
+inline void HexBoard::occupied_O_set(unsigned col, unsigned row)
+{
+    occupied_O[col] |= (1 << row);
 }
 
 // -----------------------------------------------------------------------------
