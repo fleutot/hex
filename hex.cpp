@@ -14,7 +14,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    const int max_width = 26u;
+    const int max_width = 16u;
 
     if ((argc != 2) || (atoi(argv[1]) > max_width))  {
         cout << "Usage: hex n" << endl;

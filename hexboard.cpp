@@ -93,6 +93,8 @@ HexBoard::HexBoard(unsigned size): size(size),
             unoccupied_list.push_back(make_pair(col, row));
         }
     }
+    occupied_O.resize(size);
+    occupied_X.resize(size);
 }
 
 bool HexBoard::sanity_check()
@@ -124,17 +126,13 @@ bool HexBoard::play(unsigned col, unsigned row, Player player)
 
 void HexBoard::place(const unsigned col, const unsigned row, const Player player)
 {
-    // order of row and col here inverted, occupied_map is a vector of rows.
-    occupied_map[row][col] = player;
-    auto it = find(unoccupied_list.begin(), unoccupied_list.end(),
-                   make_pair(col, row));
-    unoccupied_list.erase(it);
+    occupied_set(col, row, player);
 }
 
 void HexBoard::unplace(const unsigned col, const unsigned row)
 {
-    occupied_map[row][col].set(player_e::NONE);
-    unoccupied_list.push_back(make_pair(col, row));
+    Player old_player = occupied_map[row][col];
+    occupied_reset(col, row, old_player);
 }
 
 //  ----------------------------------------------------------------------------
@@ -197,41 +195,37 @@ bool HexBoard::fill_up_half_and_win_check(Player player)
 
 bool HexBoard::win_check(const Player player)
 {
-    player_select(player);
+    vector<uint16_t>& occupied = (player.get() == player_e::O) ?
+        occupied_O :
+        occupied_X;
 
-    vector<int> unvisited;
-    occupied_list_get(player, unvisited);
-    unvisited.push_back(side_b);                // Target board rim.
-    sort(unvisited.begin(), unvisited.end());   // For easier intersection.
+    // all ones, right justified.
+    const uint16_t mask = (1u << size) - 1;
+    uint16_t comb = mask;
+    auto row_it = occupied.begin();
 
-    unsigned node = side_a; // Start board rim.
-    return win_search_recursive(node, unvisited);
-}
-
-bool HexBoard::win_search_recursive(const int node, vector<int>& unvisited)
-{
-    vector<int> neighbors = board->neighbors_get(node);
-    vector<int> player_neighbors;
-
-    sort(neighbors.begin(), neighbors.end());
-    // Put in player_neighbors only elements that are both in neighbors and
-    // unvisited. Remove from unvisited the elements of neighbors. unvisited is
-    // still sorted after this function call.
-    intersect_and_remove(neighbors, unvisited, player_neighbors);
-
-    for (auto n: player_neighbors) {
-        if (n == side_b) {
-            return true;    // Target rim reached.
-        }
-        if (win_search_recursive(n, unvisited)) {
-            return true;
-        }
+    while ((comb != 0) && (row_it != occupied.end())) {
+        // Comb next row, any occupied position at previous row connects to this
+        // row on the same column index, and column index - 1. For example:
+        // Board:
+        // . - X - . - .                -
+        //  \ / \ / \ / \               -
+        //   .   X   X   .              -
+        //    \ / \ / \ / \             -
+        //     T - T - T - .            -
+        //
+        // T are the positions the comb must test on the next row.
+        //
+        // Occupied_X (left-right-mirrored compared to the board, bit 0 is
+        // column 0):
+        // . . X .
+        // . X X .
+        // . T T T
+        comb |= comb >> 1u;
+        comb &= *row_it & mask;
+        ++row_it;
     }
-    if (unvisited.size() == 0) {
-        return false;
-    }
-
-    return false;
+    return comb != 0;
 }
 
 void HexBoard::occupied_list_get(const Player player, vector<int>& list)
@@ -257,6 +251,34 @@ void HexBoard::player_select(const Player player)
     } else {
         cerr << __func__ << ": undefined player." << endl;
         exit(1);
+    }
+}
+
+void HexBoard::occupied_set(unsigned col, unsigned row, Player player,
+                            int value)
+{
+    if (value > 0) {
+        // order of row and col here inverted, occupied_map is a vector of rows.
+        occupied_map[row][col] = player;
+        auto it = find(unoccupied_list.begin(), unoccupied_list.end(),
+                       make_pair(col, row));
+        unoccupied_list.erase(it);
+        if (player.get() == player_e::X) {
+            occupied_X[row] |= (1 << col);
+        } else if (player.get() == player_e::O) {
+            // col and row are inverted for common win_check().
+            occupied_O[col] |= (1 << row);
+        }
+
+    } else {
+        occupied_map[row][col] = player_e::NONE;
+        unoccupied_list.push_back(make_pair(col, row));
+        if (player.get() == player_e::X) {
+            occupied_X[row] &= ~(1 << col);
+        } else if (player.get() == player_e::O) {
+            // col and row are inverted for common win_check().
+            occupied_O[col] &= ~(1 << row);
+        }
     }
 }
 

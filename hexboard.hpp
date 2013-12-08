@@ -4,6 +4,7 @@ Implementation of a hex board
 #ifndef HEXBOARD_HPP_INCLUDED
 #define HEXBOARD_HPP_INCLUDED
 
+#include <cstdint>
 #include <memory>
 #include <random>
 #include <vector>
@@ -47,12 +48,18 @@ public:
 
     bool win_check(const Player player);
 
-    vector< vector<Player> >& occupied_save() {
-        return occupied_map;
+    vector<uint16_t>& occupied_save(const Player player) {
+        return (player.get() == player_e::X)
+            ? occupied_X
+            : occupied_O;
     }
 
-    void occupied_restore(vector< vector<Player> >& src) {
-        occupied_map = src;
+    void occupied_restore(const Player player, vector<uint16_t>& src) {
+        if (player.get() == player_e::X) {
+            occupied_X = src;
+        } else {
+            occupied_O = src;
+        }
     }
 
     // Return a list of all unoccupied slots. The reference may modify the
@@ -103,6 +110,17 @@ protected:
     // compute it many times when running an AI on the board.
     vector< pair<unsigned, unsigned> > unoccupied_list;
 
+    // These are used for an optimized monte-carlo simulation. A bit to 1 means
+    // this player has a stone at that position. For occupied_X, the first
+    // uint16 is the highest row of the board. For occupied_O, it is the
+    // left-most column.
+    // bit 0 of the the uint16 is column 0 for occupied_X, row 0 for
+    // occupied_O. Note that if you think of bit 0 as the right-most bit, this
+    // means these uint16s are left-right mirrored compared to the actual board.
+    // This helps optimization, and gives the same number for bit and column/row.
+    vector<uint16_t> occupied_X;
+    vector<uint16_t> occupied_O;
+
     // Indeces to the winning board sides (virtual nodes) of the current player.
     int side_a, side_b;
 
@@ -111,6 +129,11 @@ protected:
     // Update the variable trees to point to the correct trees_O or trees_X
     // depending on the current player.
     void player_select(const Player player);
+
+    void occupied_set(unsigned col, unsigned row, Player player, int value = 1);
+    void occupied_reset(unsigned col, unsigned row, Player player) {
+        occupied_set(col, row, player, 0);
+    }
 
     // Convert a column and row pair to a linear index, which is used as a node
     // name in the graph.
@@ -123,9 +146,6 @@ protected:
         row = lin / size;
         col = lin % size;
     }
-
-    // Recursive path search used by win_check().
-    bool win_search_recursive(const int node, vector<int>& unvisited);
 };
 
 ostream& operator<< (ostream& os, const HexBoard& h);
