@@ -32,6 +32,12 @@ void test_hexboard_fill_up();
 void test_hexboard_win_1(void);
 void test_hexboard_win_2(void);
 void test_hexboard_win_3(void);
+void test_hexboard_win_4(void);
+void test_hexboard_win_5(void);
+void test_hexboard_win_6(void);
+void test_hexboard_win_7(void);
+void test_hexboard_win_8(void);
+void test_hexboard_win_9(void);
 void test_hexboard_unplace(void);
 void test_hexboard_occupied_save_restore();
 
@@ -49,6 +55,12 @@ int main(void)
     test_hexboard_win_1();
     test_hexboard_win_2();
     test_hexboard_win_3();
+    test_hexboard_win_4();
+    test_hexboard_win_5();
+    test_hexboard_win_6();
+    test_hexboard_win_7();
+    test_hexboard_win_8();
+    test_hexboard_win_9();
     test_hexboard_unplace();
     test_hexboard_occupied_save_restore();
     cout << "All tested passed (but user check needed!)." << endl;
@@ -272,6 +284,114 @@ void test_hexboard_win_3(void)
     win = board.play(1, 1, player_X);
     assert(win);
     assert(board.win_check(player_X));
+}
+
+void test_hexboard_win_4(void)
+{
+    cout << __func__ << endl;
+
+    HexBoard board(4);
+
+    board.play(1, 0, player_X);
+    board.play(0, 1, player_X);
+    board.play(1, 1, player_X);
+    board.play(2, 1, player_X);
+    board.play(3, 1, player_X);
+    board.play(2, 2, player_X);
+    board.play(1, 3, player_X);
+    assert(board.win_check(player_X));
+}
+
+void test_hexboard_win_5(void)
+{
+    cout << __func__ << endl;
+
+    HexBoard board(4);
+
+    board.play(0, 0, player_X);
+    board.play(0, 1, player_X);
+    board.play(0, 2, player_X);
+    board.play(1, 2, player_X);
+    // board.play(2, 1, player_X);  // done last
+    board.play(3, 1, player_X);
+    board.play(3, 2, player_X);
+    board.play(3, 3, player_X);
+    assert(!board.win_check(player_X));
+    board.play(2, 1, player_X);
+    assert(board.win_check(player_X));
+}
+
+void test_hexboard_win_6(void)
+{
+    cout << __func__ << endl;
+
+    HexBoard board(5);
+
+    board.play(0, 0, player_X);
+    board.play(0, 1, player_X);
+    board.play(0, 2, player_X);
+    board.play(0, 3, player_X);
+    board.play(1, 3, player_X);
+    // board.play(2, 2, player_X);  // done last
+    board.play(3, 1, player_X);
+    board.play(4, 1, player_X);
+    board.play(4, 2, player_X);
+    board.play(4, 3, player_X);
+    board.play(4, 4, player_X);
+    assert(!board.win_check(player_X));
+    board.play(2, 2, player_X);
+    assert(board.win_check(player_X));
+}
+
+void test_hexboard_win_7(void)
+{
+    cout << __func__ << endl;
+
+    HexBoard board(5);
+
+    board.play(0, 0, player_X);
+    board.play(0, 1, player_X);
+    board.play(0, 2, player_X);
+    board.play(0, 3, player_X);
+    board.play(1, 3, player_X);
+    board.play(2, 2, player_X);
+    board.play(3, 1, player_X);
+    board.play(4, 1, player_X);
+    board.play(4, 2, player_X);
+    board.play(4, 3, player_X);
+    assert(!board.win_check(player_X));
+    board.play(1, 4, player_X);
+    assert(board.win_check(player_X));
+}
+
+void test_hexboard_win_8(void)
+{
+    cout << __func__ << endl;
+
+    HexBoard board(5);
+
+    board.play(2, 0, player_X);
+    board.play(1, 1, player_X);
+    board.play(1, 2, player_X);
+    board.play(2, 2, player_X);
+    board.play(2, 3, player_X);
+    board.play(1, 4, player_X);
+    assert(board.win_check(player_X));
+}
+
+void test_hexboard_win_9(void)
+{
+    cout << __func__ << endl;
+
+    HexBoard board(5);
+
+    board.play(0, 2, player_O);
+    board.play(1, 1, player_O);
+    board.play(2, 1, player_O);
+    board.play(2, 2, player_O);
+    board.play(3, 2, player_O);
+    board.play(4, 1, player_O);
+    assert(board.win_check(player_O));
 }
 
 void test_hexboard_unplace(void)

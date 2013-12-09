@@ -37,7 +37,8 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
         }
         // Save the occupied map including test move, to restore between
         // simulations.
-        vector<uint16_t> test_occupied = board.occupied_save(tested_player);
+        vector<uint16_t> test_occupied
+            = board.occupied_save(tested_player.other());
 
         // Run all the simulations with this test move, keeping track of the
         // number of times it led to a win (score).
@@ -52,7 +53,7 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
                 // A full board of hex has always exactly one winner.
                 ++score;
             }
-            board.occupied_restore(tested_player, test_occupied);
+            board.occupied_restore(tested_player.other(), test_occupied);
         }
 
         if (score > best_score) {

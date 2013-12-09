@@ -16,8 +16,21 @@ using namespace std;
 
 const int nb_players = 2;
 
-template<class T>
-static void intersect_and_remove(vector<T>& a, vector<T>& b, vector<T>& r);
+static inline unsigned unsigned_div_ceil(const unsigned num,
+                                         const unsigned denom);
+
+static inline void comb_step_down(vector<uint16_t>& combed,
+                                  vector<uint16_t> const& occupied,
+                                  const unsigned i);
+
+static inline bool comb_step_up(vector<uint16_t>& combed,
+                                vector<uint16_t> const& occupied,
+                                const unsigned i);
+
+static inline bool comb_laterally_spread(vector<uint16_t>& combed,
+                                         vector<uint16_t> const& occupied,
+                                         const unsigned i);
+
 
 // 4 extra virtual nodes for the board, representing the edges. These were added
 // to ease checking for winning condition.
@@ -177,19 +190,13 @@ bool HexBoard::fill_up_half_and_win_check(Player player)
     shuffle(free_pos.begin(), free_pos.end(), random_engine);
 
     // If the number of free positions is not even, player is the one to
-    // play once more than the other. This is solved with integer division,
-    // (which truncates downwards if not even) and starting with the other
-    // player.
-    player.swap();
+    // play once more than the other. Round up the integer division.
     player_select(player);
-    for (unsigned i = 0; i < free_pos.size() / 2; ++i) {
+    for (unsigned i = 0; i < unsigned_div_ceil(free_pos.size(), 2); ++i) {
         (this->*occupied_player_set)(free_pos[i].first, free_pos[i].second);
     }
 
-    // Only the moves of the other player were played. Since there is exactly
-    // one winner if the board if full, return true (win) if this *other* player did
-    // not win.
-    return !win_check(player);
+    return win_check(player);
 }
 
 bool HexBoard::win_check(const Player player)
@@ -198,34 +205,78 @@ bool HexBoard::win_check(const Player player)
         occupied_O :
         occupied_X;
 
-    // all ones, right justified.
-    const uint16_t mask = (1u << size) - 1;
-    uint16_t comb = mask;
-    auto row_it = occupied.begin();
+    vector<uint16_t> combed(size);
 
-    while ((comb != 0) && (row_it != occupied.end())) {
-        // Comb next row, any occupied position at previous row connects to this
-        // row on the same column index, and column index - 1. For example:
-        // Board:
-        // . - X - . - .                -
-        //  \ / \ / \ / \               -
-        //   .   X   X   .              -
-        //    \ / \ / \ / \             -
-        //     T - T - T - .            -
-        //
-        // T are the positions the comb must test on the next row.
-        //
-        // Occupied_X (left-right-mirrored compared to the board, bit 0 is
-        // column 0):
-        // . . X .
-        // . X X .
-        // . T T T
-        comb |= comb >> 1u;
-        comb &= *row_it & mask;
-        ++row_it;
+    // Was the current row modified by a go-back-up operation?
+    bool previous_modified = false;
+
+    combed[0] = occupied[0];
+    unsigned i = 0;
+    while ((combed[i] != 0) && (i < size)) {
+        // Connections 3 and 9 o'clock on this row.
+        // Nothing happens at the first row since combed[0] is initialized as
+        // occupied[0].
+        bool lateral_spread = comb_laterally_spread(combed, occupied, i);
+
+        if (lateral_spread || previous_modified) {
+            // Connections 11 and 1 o'clock to previous row.
+            // Test a step upwards if:
+            // - there was lateral spread, since it could connect to a new node
+            // on the previous row,
+            // - the current row was modified while going upwards on the
+            // previous step, since there could be a new diagonal connection.
+            // The first row cannot be modified, because of its initialization.
+            previous_modified = comb_step_up(combed, occupied, i);
+            if (previous_modified) {
+                --i;    // keep going upwards.
+            } else {
+                // Nothing new, go on.
+                comb_step_down(combed, occupied, i);
+                ++i;
+            }
+        } else {
+            // Connections 5 and 7 o'clock from this row.
+            comb_step_down(combed, occupied, i);
+            ++i;
+        }
     }
-    return comb != 0;
+    return combed[size - 1] != 0;
 }
+
+
+static inline void comb_step_down(vector<uint16_t>& combed,
+                                  vector<uint16_t> const& occupied,
+                                  const unsigned i)
+{
+    combed[i + 1] |= combed[i] | (combed[i] >> 1u);
+    combed[i + 1] &= occupied[i + 1];
+}
+
+static inline bool comb_step_up(vector<uint16_t>& combed,
+                                vector<uint16_t> const& occupied,
+                                const unsigned i)
+{
+    uint16_t old_previous_row = combed[i - 1];
+    combed[i - 1] |= combed[i] | (combed[i] << 1u);
+    combed[i - 1] &= occupied[i - 1];
+    return old_previous_row != combed[i - 1];
+}
+
+static inline bool comb_laterally_spread(vector<uint16_t>& combed,
+                                         vector<uint16_t> const& occupied,
+                                         const unsigned i)
+{
+    uint16_t old_combed = combed[i];    // To see if there was actual spread.
+    uint16_t tmp_combed;
+    do {
+        tmp_combed = combed[i];
+        combed[i] |= (combed[i] << 1u) & occupied[i];
+        combed[i] |= (combed[i] >> 1u) & occupied[i];
+    } while (combed[i] != tmp_combed);
+    return old_combed != combed[i];
+}
+
+
 
 void HexBoard::occupied_list_get(const Player player, vector<int>& list)
 {
@@ -369,24 +420,8 @@ ostream& operator<< (ostream& os, const HexBoard& board)
 // Local functions
 // -----------------------------------------------------------------------------
 
-// Put in r the elements that are both in a and b.
-// Remove from b the elements of a.
-// a and b must be sorted.
-// r should normally be empty at start.
-template<class T>
-static void intersect_and_remove(vector<T>& a, vector<T>& b, vector<T>& r)
+static inline unsigned unsigned_div_ceil(const unsigned num,
+                                         const unsigned denom)
 {
-    auto a_it = a.begin();
-    auto b_it = b.begin();
-
-    while ((a_it != a.end()) && (b_it != b.end())) {
-        if (*a_it < *b_it) {
-            ++a_it;
-        } else if (*a_it > *b_it) {
-            ++b_it;
-        } else {    // equal
-            r.push_back(*a_it);
-            b.erase(b_it);
-        }
-    }
+    return (num + denom - 1) / denom;
 }

@@ -39,8 +39,7 @@ public:
     }
 
     // Destructive. Once this function is called, the content of the member
-    // variable occupied_X or _O is not valid. Note the the destroyed map is
-    // that of thet *other* player than the one passed as parameter.
+    // variable occupied_X or _O is not valid, depending on player.
     // Use the function occupied_save and occupied_restore to revert to a known
     // state.
     // The unoccupied member has been shuffled, but its content has not been
