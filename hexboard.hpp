@@ -38,25 +38,27 @@ public:
         unplace(coord.first, coord.second);
     }
 
+    void player_select(const Player player);
+
     // Destructive. Once this function is called, the content of the member
     // variable occupied_X or _O is not valid, depending on player.
     // Use the function occupied_save and occupied_restore to revert to a known
     // state.
     // The unoccupied member has been shuffled, but its content has not been
     // otherwise changed.
-    bool fill_up_half_and_win_check(Player player);
+    bool fill_up_half_and_win_check();
     void fill_up(const Player first_player);
 
     bool win_check(const Player player);
 
-    vector<uint16_t>& occupied_save(const Player player) {
-        return (player.get() == player_e::X)
+    vector<uint16_t>& occupied_save() {
+        return (current_player.get() == player_e::X)
             ? occupied_X
             : occupied_O;
     }
 
-    void occupied_restore(const Player player, vector<uint16_t>& src) {
-        if (player.get() == player_e::X) {
+    void occupied_restore(vector<uint16_t>& src) {
+        if (current_player.get() == player_e::X) {
             occupied_X = src;
         } else {
             occupied_O = src;
@@ -93,6 +95,8 @@ public:
 protected:
     unsigned size;
 
+    Player current_player;
+
     // Dynamically allocated, to make the default copy constructor do a shallow
     // copy. Copies of HexBoard do not modify the board graph itself, there is
     // therefore no reason to make a deep copy of it, all copies of HexBoard can
@@ -126,10 +130,6 @@ protected:
     int side_a, side_b;
 
     mt19937 random_engine;
-
-    // Update the variable trees to point to the correct trees_O or trees_X
-    // depending on the current player.
-    inline void player_select(const Player player);
 
     void occupied_set(unsigned col, unsigned row, Player player, int value = 1);
     void occupied_reset(unsigned col, unsigned row, Player player) {

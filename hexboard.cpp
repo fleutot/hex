@@ -16,9 +16,6 @@ using namespace std;
 
 const int nb_players = 2;
 
-static inline unsigned unsigned_div_ceil(const unsigned num,
-                                         const unsigned denom);
-
 static inline void comb_step_down(vector<uint16_t>& combed,
                                   vector<uint16_t> const& occupied,
                                   const unsigned i);
@@ -183,20 +180,21 @@ void HexBoard::fill_up(Player player)
 /// \param  The player that would be the next player.
 /// \return Win for that player.
 //  ----------------------------------------------------------------------------
-bool HexBoard::fill_up_half_and_win_check(Player player)
+bool HexBoard::fill_up_half_and_win_check()
 {
     vector< pair<unsigned, unsigned> >& free_pos = unoccupied_list_get();
-    // Order the future moves randomly.
+    // Order the future moves randomly. This does not modify the content of the
+    // class, only the order of the content.
     shuffle(free_pos.begin(), free_pos.end(), random_engine);
 
     // If the number of free positions is not even, player is the one to
-    // play once more than the other. Round up the integer division.
-    player_select(player);
-    for (unsigned i = 0; i < unsigned_div_ceil(free_pos.size(), 2); ++i) {
+    // play once less than the other, since it has already played its test move.
+    // Solved with integer division (rounding downwards).
+    for (unsigned i = 0; i < free_pos.size() / 2; ++i) {
         (this->*occupied_player_set)(free_pos[i].first, free_pos[i].second);
     }
 
-    return win_check(player);
+    return win_check(current_player);
 }
 
 bool HexBoard::win_check(const Player player)
@@ -290,8 +288,9 @@ void HexBoard::occupied_list_get(const Player player, vector<int>& list)
     }
 }
 
-inline void HexBoard::player_select(const Player player)
+void HexBoard::player_select(const Player player)
 {
+    current_player = player;
     if (player.get() == player_e::O) {
         HexBoard::occupied_player_set = &HexBoard::occupied_O_set;
     } else if (player.get() == player_e::X) {
@@ -414,14 +413,4 @@ ostream& operator<< (ostream& os, const HexBoard& board)
     }
 
     return os;
-}
-
-// -----------------------------------------------------------------------------
-// Local functions
-// -----------------------------------------------------------------------------
-
-static inline unsigned unsigned_div_ceil(const unsigned num,
-                                         const unsigned denom)
-{
-    return (num + denom - 1) / denom;
 }

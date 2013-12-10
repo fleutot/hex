@@ -27,6 +27,8 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
     cout << " (" << nb_simulations_per_move << " simulations per tested move)"
          << flush;
 
+    board.player_select(tested_player);
+
     for (auto test_coord: free_slots) {
         // Play the test move first.
         bool win = board.play(test_coord, tested_player);
@@ -37,8 +39,7 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
         }
         // Save the occupied map including test move, to restore between
         // simulations.
-        vector<uint16_t> test_occupied
-            = board.occupied_save(tested_player.other());
+        vector<uint16_t> test_occupied = board.occupied_save();
 
         // Run all the simulations with this test move, keeping track of the
         // number of times it led to a win (score).
@@ -46,14 +47,13 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
         for (unsigned mc_run = 0; mc_run < nb_simulations_per_move; ++mc_run) {
             // Play all positions randomly until the board is full. The first
             // random move after the test position is done by the other player.
-            bool other_win = board.fill_up_half_and_win_check(
-                tested_player.other());
+            bool win = board.fill_up_half_and_win_check();
 
-            if (!other_win) {
+            if (win) {
                 // A full board of hex has always exactly one winner.
                 ++score;
             }
-            board.occupied_restore(tested_player.other(), test_occupied);
+            board.occupied_restore(test_occupied);
         }
 
         if (score > best_score) {

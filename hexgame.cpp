@@ -126,7 +126,7 @@ bool HexGame::ai_input_get(pair<unsigned, unsigned>& move)
     chrono::time_point<chrono::system_clock> start, end;
     start = chrono::system_clock::now();
 
-    MoveEvaluator evaluator(board, current_player, 10000000, 1000u);
+    MoveEvaluator evaluator(board, current_player, 10000000, 5000u);
     move = evaluator.best_move_calculate();
     cout << " -> ";
     move_print(move);
