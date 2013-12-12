@@ -11,7 +11,7 @@ TARGET_MST = minimum_spanning_tree
 
 SRC_HEX = graph.cpp hexboard.cpp hexgame.cpp hex.cpp player.cpp moveeval.cpp
 OBJ_HEX = $(SRC_HEX:.cpp=.o)
-TARGET_HEX = hex
+TARGET_HEX = hexjakt
 
 all: $(TARGET_MST) $(TARGET_ASP) $(TARGET_HEX)
 
@@ -25,8 +25,8 @@ $(TARGET_MST): $(OBJ_MST)
 $(TARGET_ASP): $(OBJ_ASP)
 	$(CC) $(CFLAGS) $(OBJ_ASP) -o $(TARGET_ASP)
 
-hex: $(OBJ_HEX)
-	$(CC) $(CFLAGS) $(OBJ_HEX) -o hex
+$(TARGET_HEX): $(OBJ_HEX)
+	$(CC) $(CFLAGS) $(OBJ_HEX) -o $(TARGET_HEX)
 
 %.o : %.cpp
 	$(CC) $(CFLAGS) -c $< -o $@

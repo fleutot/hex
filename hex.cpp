@@ -24,11 +24,11 @@ static const unsigned max_size = 16u;
 static void usage_print()
 {
     cout << "Usage:" << endl;
-    cout << "hex size" << endl;
+    cout << "hexjakt size" << endl;
     cout << "- interactive play" << endl;
     cout << "    size: size of the board side, less than " << max_size << endl;
     cout << endl;
-    cout << "hex P [size] [iter]" << endl;
+    cout << "hexjakt P [size] [iter]" << endl;
     cout << "- automatic play" << endl;
     cout << "    P: the player color (X or O). X plays first, north/south."
          << endl;
