@@ -9,6 +9,10 @@ Hex game class implementation
 #include "hexgame.hpp"
 #include "moveeval.hpp"
 
+enum {
+    FLAG_NO_READ = 1
+};
+
 using namespace std;
 
 void HexGame::start_prompt()
@@ -91,7 +95,9 @@ bool HexGame::autoplay_next_move_play()
     if (current_player_type_get() == PlayerType::AI) {
         error_code = autoplay_input_move_make(move, elapsed_milli);
     } else if (current_player_type_get() == PlayerType::OPPONENT_AI) {
-        error_code = autoplay_opponent_move_read(move, opponent_give_up);
+        do {
+            error_code = autoplay_opponent_move_read(move, opponent_give_up);
+        } while (error_code != 0);
     }
 
     if (error_code < 0) {
@@ -130,7 +136,7 @@ void HexGame::autoplay_move_print(pair<unsigned, unsigned> const& move,
         cout << " ";
     }
     cout << "#" << ++move_count << " ";
-    cout << "t=" << elapsed_milli << "ms" << endl;
+    cout << "t=" << static_cast<int>(elapsed_milli) << "ms" << endl;
 }
 
 void HexGame::autoplay_capitulate_print()
@@ -265,12 +271,13 @@ int HexGame::autoplay_opponent_move_read(pair<unsigned, unsigned>& move,
     cin >> column; // lower case letter representing board column. May be dot if
                    // the player wants to quit.
     if (color != 'O' && color != 'X') {
+        cerr << "E: received illegal color: " << color << endl;
         return -6;
     }
     if (column == ':') {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        return 0;   // return with no error.
+        return FLAG_NO_READ; // return with no error, but a flag that nothing was read.
     }
     if(column == '.') {
         give_up = true;
@@ -278,13 +285,13 @@ int HexGame::autoplay_opponent_move_read(pair<unsigned, unsigned>& move,
     }
     col_n = tolower(column) - 'a';
     if(col_n >= board.size_get()) {
-        cerr << color << ". E: " << color <<
+        cerr << color << ": E: " << color <<
             " received illegal column: '" << column << "'\n";
         return -4;
     }
     cin >> row_n;
     if(row_n > board.size_get()) {
-        cerr << color << ". E: " << color <<
+        cerr << color << ": E: " << color <<
             " received illegal row: '" << row_n << "'\n";
         return -5;
     }
