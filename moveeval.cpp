@@ -45,10 +45,8 @@ pair<unsigned, unsigned> MoveEvaluator::best_move_calculate()
         // number of times it led to a win (score).
         int score = 0;
         for (unsigned mc_run = 0; mc_run < nb_simulations_per_move; ++mc_run) {
-            // Play all positions randomly until the board is full. The first
-            // random move after the test position is done by the other player.
+            // Play all positions randomly until the board is full.
             bool win = board.fill_up_half_and_win_check();
-
             if (win) {
                 // A full board of hex has always exactly one winner.
                 ++score;
