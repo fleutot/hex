@@ -7,6 +7,6 @@ Average shortest path:
 - run with "./average_shortest_path
 
 Hex game:
-- build with "make hex"
-- run with "./hex n", with n the board size.
+- build with "make hexjakt"
+- run with "./hexjakt n", with n the board size.
 
